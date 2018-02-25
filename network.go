@@ -43,14 +43,14 @@ func downloadFile(args []string) {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	_, err = os.Stat(strings.Join([]string { dir, "/", downloadTo }, ""))
 	if err == nil {
-		fmt.Printf("[err] : File %s already exists.. (Did you try running this program already?)\n", downloadTo)
+		fmt.Printf("[err] : file %s already exists.. (did you try running this program already?)\n", downloadTo)
 		panic(err)
 	}
 
 	// create the file
 	oput, err := os.Create(downloadTo)
 	if err != nil {
-		fmt.Printf("[err] : Error creating file %s.. (Does it already exist?)\n", downloadTo)
+		fmt.Printf("[err] : error creating file %s.. (does it already exist?)\n", downloadTo)
 		panic(err)
 	}
 	defer oput.Close()
@@ -58,7 +58,7 @@ func downloadFile(args []string) {
 	// attempt to download the contents
 	res, err := http.Get(args[0])
 	if err != nil {
-		fmt.Printf("[err] : Error downloading from %s.. (Is your internet working?)\n", args[0])
+		fmt.Printf("[err] : error downloading from %s.. (is your internet working?)\n", args[0])
 		panic(err)
 	}
 	defer res.Body.Close()
@@ -66,11 +66,11 @@ func downloadFile(args []string) {
 	// copy url contents to file
 	bytes, err := io.Copy(oput, res.Body)
 	if err != nil {
-		fmt.Printf("[err] : Error copying data from %s to %s.. (Is %s in the working directory?)\n", args[0], downloadTo, downloadTo)
+		fmt.Printf("[err] : error copying data from %s to %s.. (is %s in the working directory?)\n", args[0], downloadTo, downloadTo)
 		panic(err)
 	}
 
-	fmt.Printf("Successfully copied %s bytes from %s to %s\n", bytes, args[0], downloadTo)
+	fmt.Printf("successfully copied %s bytes from %s to %s\n", bytes, args[0], downloadTo)
 }
 
 
@@ -81,14 +81,14 @@ func get(url string) string {
 	// attempt to download the contents
 	res, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("[err] : Error downloading from %s.. (Is your internet working?)\n", url)
+		fmt.Printf("[err] : error downloading from %s.. (is your internet working?)\n", url)
 		panic(err)
 	}
 	defer res.Body.Close()
 
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Printf("[err] : Error reading from %s.. (Is your internet working?)\n", url)
+		fmt.Printf("[err] : error reading from %s.. (is your internet working?)\n", url)
 		panic(err)
 	}
 

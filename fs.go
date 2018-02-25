@@ -27,14 +27,14 @@ func createFile(file string) {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	_, err = os.Stat(strings.Join([]string { dir, "/", file }, ""))
 	if err == nil {
-		fmt.Printf("[err] : File %s already exists..\n", file)
+		fmt.Printf("[err] : file %s already exists..\n", file)
 		panic(err)
 	}
 
 	// create the file
 	oput, err := os.Create(file)
 	if err != nil {
-		fmt.Printf("[err] : Error creating file %s.. (Does it already exist?)\n", file)
+		fmt.Printf("[err] : error creating file %s.. (does it already exist?)\n", file)
 		panic(err)
 	}
 	defer oput.Close()
@@ -47,7 +47,7 @@ func readFile(file string) string {
 	// read file
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
-		fmt.Printf("[err] : Error reading file %s.. (Does it exist?)\n", file)
+		fmt.Printf("[err] : error reading file %s.. (does it exist?)\n", file)
 		panic(err)
 	}
 
@@ -66,7 +66,7 @@ func writeFile(file string, data string) {
 	// write to file
 	err := ioutil.WriteFile(file, bdata, 0644)
 	if err != nil {
-		fmt.Printf("[err] : Error writing to file %s.. (Does it exist?)\n", file)
+		fmt.Printf("[err] : error writing to file %s.. (does it exist?)\n", file)
 		panic(err)
 	}
 
@@ -84,7 +84,7 @@ func readJSONFile(file string) map[string]interface{} {
 	// turn json into a valid golang item
 	err := json.Unmarshal(jsonObj, &data)
 	if err != nil {
-		fmt.Printf("[err] : Error converting raw JSON to valid golang item from %s.. (Is this valid JSON?)\n", file)
+		fmt.Printf("[err] : error converting raw JSON to valid golang item from %s.. (is this valid JSON?)\n", file)
 		panic(err)
 	}
 
@@ -98,7 +98,7 @@ func writeJSONFile(file string, data map[string]int) {
 	// turn go map into valid JSON
 	fileData, err := json.Marshal(data)
 	if err != nil {
-		fmt.Printf("[err] : Error while converting a golang map into JSON. (how did this even happen)\n")
+		fmt.Printf("[err] : error while converting a golang map into JSON. (how did this even happen)\n")
 		panic(err)
 	}
 

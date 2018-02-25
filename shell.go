@@ -25,10 +25,10 @@ import (
 /* terminal utils */
 
 // function to clear the screen
-func clear() { if runtime.GOOS == "windows" { cmd := exec.Command("cls"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : Error while executing cls. (System32 is damaged)\n"); os.Exit(1); }; } else { fmt.Printf("\033[2J\033[;H"); }; }
+func clear() { if runtime.GOOS == "windows" { cmd := exec.Command("cmd", "/c", "cls"); cmd.Stdout = os.Stdout; err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing cls. (report this issue)\n"); os.Exit(1); }; } else { fmt.Printf("\033[2J\033[;H"); }; }
 
 // trick Terminal.app to respect ANSI color codes
-func ansiTrick() { cmd := exec.Command("export", "TERM=xterm"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : Error while executing export. (Isn't that a shell builtin?)\n"); os.Exit(1); }; }
+func ansiTrick() { cmd := exec.Command("export", "TERM=xterm"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n"); os.Exit(1); }; }
 
 // get terminal input
 func input(prompt string) string { fmt.Printf(prompt); scanner := bufio.NewScanner(os.Stdin); scanner.Scan(); return scanner.Text(); }

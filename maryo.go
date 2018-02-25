@@ -16,5 +16,7 @@ import (
 )
 
 func main() {
+  clear()
   fmt.Printf("nothing works yet, look away...")
+
 }
