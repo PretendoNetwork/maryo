@@ -25,15 +25,21 @@ import (
 /* terminal utils */
 
 // function to clear the screen
-func clear() { if runtime.GOOS == "windows" { cmd := exec.Command("cmd", "/c", "cls"); cmd.Stdout = os.Stdout; err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing cls. (report this issue)\n"); os.Exit(1); }; } else { fmt.Printf("\033[2J\033[;H"); }; }
+func clear() { if runtime.GOOS == "windows" { cmd := exec.Command("cmd", "/c", "cls"); cmd.Stdout = os.Stdout; err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing cls. (report this issue)\n"); panic(err); }; } else { fmt.Printf("\033[2J\033[;H"); }; }
 
 // trick Terminal.app to respect ANSI color codes
-func ansiTrick() { cmd := exec.Command("export", "TERM=xterm"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n"); os.Exit(1); }; }
+func ansiTrick() { cmd := exec.Command("export", "TERM=xterm"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n"); panic(err); }; }
 
 // get terminal input
 func input(prompt string) string { fmt.Printf(prompt); scanner := bufio.NewScanner(os.Stdin); scanner.Scan(); return scanner.Text(); }
 
-// -- give terminal style --
+// shorthand for len([]rune(x))
+func length(x string) int { return len([]rune(x)); }
+
+// pad string to match the length of another string
+func padStrToMatchStr(pad string, match string, padWith string) string { if length(padWith) != 1 { fmt.Printf("[err] : '%s' is not 1 character long", padWith); os.Exit(1); }; for x := 0; x <= length(match); x++ { pad += padWith; }; return pad; }
+
+/* give terminal style */
 
 // set terminal title
 func ttitle(title string) { fmt.Print(strings.Join([]string {"\033]0;",title,"\007"}, "")); }

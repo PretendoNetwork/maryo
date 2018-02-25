@@ -20,15 +20,25 @@ import (
 	"strings"
 )
 
+// check if file exists
+func doesFileExist(file string) bool {
+
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	_, err = os.Stat(strings.Join([]string { dir, "/", file }, ""))
+	if err != nil {
+		return false
+	}
+	return true
+
+}
+
 // create a file
 func createFile(file string) {
 
 	// detect if file already exists
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	_, err = os.Stat(strings.Join([]string { dir, "/", file }, ""))
-	if err == nil {
-		fmt.Printf("[err] : file %s already exists..\n", file)
-		panic(err)
+	if doesFileExist(file) == true {
+		fmt.Printf("[err] : %s already exists..", file)
+		os.Exit(1)
 	}
 
 	// create the file
