@@ -19,6 +19,10 @@ import (
 
 func setup(fileMap map[string]string) {
 
+  // test data
+  test := make([]string, 1)
+  test[0] = "account"
+
   // file status map
   fileStat := make(map[string]string)
   fileStat["ne"] = "nonexistent"
@@ -52,15 +56,16 @@ func setup(fileMap map[string]string) {
     fmt.Printf(" proxy?                                 > config creation    \n")
     fmt.Printf(" 1. automatic                             confirm prefs      \n")
     fmt.Printf(" 2. custom                                display proxy info \n")
-    fmt.Printf(" -> (1|2)                                                    \n")
+    fmt.Printf(" 3. template                                                 \n")
     fmt.Printf("                                                             \n")
+    fmt.Printf(" -> (1|2|3)                                                  \n")
     fmt.Printf("=============================================================\n")
     method = input(": ")
 
     if ( method == "1" ) || ( method == "2" ) {
       break
     } else {
-      fmt.Printf("-> please enter 1 or 2")
+      fmt.Printf("-> please enter 1 or 2\n")
       time.Sleep(1500 * time.Millisecond)
     }
   }
@@ -70,13 +75,48 @@ func setup(fileMap map[string]string) {
   fmt.Printf("== maryo -> setup ===========================================\n")
   fmt.Printf("                                                             \n")
   fmt.Printf(" configuring proxy..                                         \n")
-  fmt.Printf(" -- log                                                      \n")
+  fmt.Printf(" current config status: %s\n", fileStat[fileMap["config"]])
   if method == "1" {
-    fmt.Printf(" configuring automatically..\n")
+    fmt.Printf("-- beginning tests")
+    fmt.Printf(" method: automatic..\n")
+    fmt.Printf(" 1. attempting to detect endpoints running on this machine\n")
+
+    // test for endpoints on this machine
+    result := make([]bool, len(test))
+    for x := 0; x < len(test); x++ {
+
+      // test the endpoint
+      fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x]))
+      res, err := get(endpointsFor("local", test[x]))
+      if (res == "it works!") && (err == nil) {
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("testing %s -> %s ", endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        result[x] = true
+      } else {
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("testing %s -> %s ", endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        result[x] = false
+      }
+
+    }
+
+    // print out the results
+    fmt.Printf("-- printing results of tests\n")
+    for x := 0; x < len(test); x++ {
+
+      // print the results
+      if result[x] == true {
+        fmt.Printf(" %s: success\n", test[x])
+      } else {
+        fmt.Printf(" %s: failiure\n", test[x])
+      }
+
+    }
+
   } else if method == "2" {
-    fmt.Printf(" configuring custom..\n")
+    fmt.Printf(" method: custom..\n")
+  } else if method == "3" {
+    fmt.Printf(" method: template..\n")
   }
-  fmt.Printf(" current config status: %s", fileStat[fileMap["config"]])
+
 }
 
 func main() {

@@ -37,7 +37,7 @@ func input(prompt string) string { fmt.Printf(prompt); scanner := bufio.NewScann
 func length(x string) int { return len([]rune(x)); }
 
 // pad string to match the length of another string
-func padStrToMatchStr(pad string, match string, padWith string) string { if length(padWith) != 1 { fmt.Printf("[err] : '%s' is not 1 character long", padWith); os.Exit(1); }; for x := 0; x <= length(match); x++ { pad += padWith; }; return pad; }
+func padStrToMatchStr(pad string, match string, padWith string) string { if length(padWith) != 1 { fmt.Printf("[err] : '%s' is not 1 character long", padWith); os.Exit(1); }; for x := 0; x < length(match); x++ { pad += padWith; }; return pad; }
 
 /* give terminal style */
 

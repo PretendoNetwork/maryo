@@ -76,25 +76,23 @@ func downloadFile(args []string) {
 
 // function to get data from a URL.
 // based on https://www.github.com/thbar/golang-playground/blob/master/download-files.go
-func get(url string) string {
+func get(url string) (string, error) {
 
 	// attempt to download the contents
 	res, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("[err] : error downloading from %s.. (is your internet working?)\n", url)
-		panic(err)
+		return "", err
 	}
 	defer res.Body.Close()
 
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Printf("[err] : error reading from %s.. (is your internet working?)\n", url)
-		panic(err)
+		return "", err
 	}
 
 	// convert the bytes to a string
 	n := bytes.IndexByte(data, 0)
 	ret := string(data[:n])
 
-	return ret
+	return ret, nil
 }
