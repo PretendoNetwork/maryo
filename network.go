@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"os"
 	"io/ioutil"
-	"bytes"
 )
 
 /* net utils */
@@ -91,8 +90,7 @@ func get(url string) (string, error) {
 	}
 
 	// convert the bytes to a string
-	n := bytes.IndexByte(data, 0)
-	ret := string(data[:n])
+	ret := string(data[:])
 
 	return ret, nil
 }
