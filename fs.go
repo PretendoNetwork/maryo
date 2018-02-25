@@ -45,6 +45,7 @@ func createFile(file string) {
 	oput, err := os.Create(file)
 	if err != nil {
 		fmt.Printf("[err] : error creating file %s.. (does it already exist?)\n", file)
+		defer oput.Close()
 		panic(err)
 	}
 	defer oput.Close()
@@ -67,6 +68,18 @@ func readFile(file string) string {
 
 }
 
+// delete a file
+func deleteFile(file string) {
+
+	// delete the file
+	err := os.Remove(file)
+	if err != nil {
+		fmt.Printf("[err] : error deleting file %s..", file)
+		panic(err)
+	}
+
+}
+
 // write to file
 func writeFile(file string, data string) {
 
@@ -78,6 +91,27 @@ func writeFile(file string, data string) {
 	if err != nil {
 		fmt.Printf("[err] : error writing to file %s.. (does it exist?)\n", file)
 		panic(err)
+	}
+
+}
+
+// check if file is valid JSON
+func checkJSONValidity(file string) bool {
+
+	// get JSON from file
+	filedata := []byte(readFile(file))
+
+	// this only exists because it's required to unmarshal the file
+	var data map[string]interface{}
+
+	// unmarshal the file
+	err := json.Unmarshal(filedata, &data)
+
+	// check for errors
+	if err != nil {
+		return false
+	} else {
+		return true
 	}
 
 }
