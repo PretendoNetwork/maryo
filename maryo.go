@@ -79,8 +79,8 @@ func setup(fileMap map[string]string) {
   fmt.Printf(" configuring proxy..                                         \n")
   fmt.Printf(" current config status: %s\n", fileStat[fileMap["config"]])
   if method == "1" {
-    fmt.Printf("-- beginning tests")
     fmt.Printf(" method: automatic..\n")
+    fmt.Printf("-- beginning tests\n")
     fmt.Printf(" 1. attempting to detect endpoints running on this machine\n")
 
     // test for endpoints on this machine
