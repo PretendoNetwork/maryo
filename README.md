@@ -11,8 +11,10 @@ it and follow the instructions
 
 ### building from source ~~(WARNING: EXTREMELY HARDCORE)~~
 #### prerequisites
-1. [golang](https://golang.org/)
-2. [reverseproxy](https://github.com/cssivision/reverseproxy)
+- [golang](https://golang.org/)
+- [reverseproxy](https://github.com/cssivision/reverseproxy)
+- [go-colortext](https://github.com/daviddengcn/go-colortext)
+
 #### building
 1. clone this repository
 2. it's easy, just `go build` in the source directory

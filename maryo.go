@@ -15,6 +15,7 @@ import (
   "flag"
   "time"
   "os"
+  "encoding/json"
 )
 
 func setup(fileMap map[string]string) {
@@ -88,8 +89,24 @@ func setup(fileMap map[string]string) {
 
       // test the endpoint
       fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x]))
+
+      // get the json
       res, err := get(endpointsFor("local", test[x]))
-      if (res == "it works!") && (err == nil) {
+
+      // prepare a struct for the json
+      var parsedRes isitworkingStruct
+
+      // parse it
+      err2 := json.Unmarshal([]byte(res), &parsedRes)
+      if err2 != nil {
+        if err == nil {
+          fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", test[x])
+          panic(err2)
+        }
+      }
+
+      // handle the results
+      if (parsedRes.Server == serverResFor(test[x])) && (err == nil) {
         fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
         result[x] = true
       } else {
