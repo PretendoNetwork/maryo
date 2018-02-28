@@ -10,12 +10,15 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+  // internals
   "fmt"
   "runtime"
   "flag"
   "time"
   "os"
   "encoding/json"
+  // externals
+  "github.com/shiena/ansicolor"
 )
 
 func setup(fileMap map[string]string) {
@@ -113,10 +116,20 @@ func setup(fileMap map[string]string) {
 
       // handle the results
       if (parsedRes.Server == serverResFor(test[x])) && (err == nil) && (res != "") {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        if isWindows() {
+          Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
+          fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        } else {
+          fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        }
         result[x] = true
       } else {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        if isWindows() {
+          Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
+          fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        } else {
+          fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        }
         result[x] = false
       }
 
@@ -150,10 +163,20 @@ func setup(fileMap map[string]string) {
 
       // handle the results
       if (parsedRes2.Server == serverResFor(testOfficial[x])) && (err3 == nil) && (res2 != "") {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        if isWindows() {
+          Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
+          fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        } else {
+          fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        }
         resultOfficial[x] = true
       } else {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        if isWindows() {
+          Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
+          fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        } else {
+          fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        }
         resultOfficial[x] = false
       }
 

@@ -13,7 +13,7 @@ it and follow the instructions
 #### prerequisites
 - [golang](https://golang.org/)
 - [reverseproxy](https://github.com/cssivision/reverseproxy)
-- [go-colortext](https://github.com/daviddengcn/go-colortext)
+- [ansicolor](https://github.com/shiena/ansicolor)
 
 #### building
 1. clone this repository

@@ -18,7 +18,6 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	"github.com/shiena/ansicolor"
 )
 
 
@@ -39,6 +38,9 @@ func length(x string) int { return len([]rune(x)); }
 // pad string to match the length of another string
 func padStrToMatchStr(pad string, match string, padWith string) string { if length(padWith) != 1 { fmt.Printf("[err] : '%s' is not 1 character long", padWith); os.Exit(1); }; for x := 0; x < length(match); x++ { pad += padWith; }; return pad; }
 
+// is it windows
+func isWindows() bool { return (runtime.GOOS == "windows"); }
+
 /* give terminal style */
 
 // set terminal title
@@ -48,7 +50,7 @@ func ttitle(title string) { fmt.Print(strings.Join([]string {"\033]0;",title,"\0
 func tcolor(cid int) string { return strings.Join([]string {"\033[",string(cid),"m"}, ""); }
 
 // terminal color codes
-func printColor(index string, text string) {
+func code(index string) string {
 
 	// map to store terminal codes
 	var termCodes map[string]string
@@ -59,7 +61,7 @@ func printColor(index string, text string) {
 	if runtime.GOOS == "darwin" { ansiTrick(); }
 
 	// fix prefix for windows
-	if runtime.GOOS == "windows" { prefix = "\x1b"; } else { prefix = "\033"; }
+	if isWindows() { prefix = "\x1b"; } else { prefix = "\033"; }
 
 	// codes go here
 
@@ -81,12 +83,7 @@ func printColor(index string, text string) {
 	termCodes["cyan"] = "[96m"
 	termCodes["white"] = "[97m"
 
-	// join the prefix and the code
-	if runtime.GOOS == "windows" {
-		w := ansicolor.NewAnsiColorWriter(os.Stdout);
-		fmt.Fprintf(w, strings.Join([]string {prefix,termCodes[index],text,prefix,termCodes["reset"]}, ""))
-	} else {
-		fmt.Printf(strings.Join([]string {prefix,termCodes[index],text,prefix,termCodes["reset"]}, ""))
-	}
+	// output the correct terminal color code
+	return strings.Join([]string {prefix,termCodes[index]}, "")
 
 }
