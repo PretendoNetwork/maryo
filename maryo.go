@@ -43,6 +43,7 @@ func setup(fileMap map[string]string) {
   fmt.Printf(" proxy server for accessing the server.   display proxy info \n")
   fmt.Printf(" -> press enter                                              \n")
   fmt.Printf("                                                             \n")
+  fmt.Printf("                                                             \n")
   fmt.Printf("=============================================================\n")
   input("")
 
@@ -56,16 +57,16 @@ func setup(fileMap map[string]string) {
     fmt.Printf(" proxy?                                 > config creation    \n")
     fmt.Printf(" 1. automatic                             confirm prefs      \n")
     fmt.Printf(" 2. custom                                display proxy info \n")
-    fmt.Printf(" 3. template                                                 \n")
+    fmt.Printf(" 3. stock                                                    \n")
     fmt.Printf("                                                             \n")
     fmt.Printf(" -> (1|2|3)                                                  \n")
     fmt.Printf("=============================================================\n")
     method = input(": ")
 
-    if ( method == "1" ) || ( method == "2" ) {
+    if ( method == "1" ) || ( method == "2" ) || ( method == "3" ) {
       break
     } else {
-      fmt.Printf("-> please enter 1 or 2\n")
+      fmt.Printf("-> please enter 1, 2, or 3\n")
       time.Sleep(1500 * time.Millisecond)
     }
   }
@@ -89,10 +90,10 @@ func setup(fileMap map[string]string) {
       fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x]))
       res, err := get(endpointsFor("local", test[x]))
       if (res == "it works!") && (err == nil) {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("testing %s -> %s ", endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
         result[x] = true
       } else {
-        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("testing %s -> %s ", endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
         result[x] = false
       }
 
@@ -114,7 +115,7 @@ func setup(fileMap map[string]string) {
   } else if method == "2" {
     fmt.Printf(" method: custom..\n")
   } else if method == "3" {
-    fmt.Printf(" method: template..\n")
+    fmt.Printf(" method: stock..\n")
   }
 
 }
