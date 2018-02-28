@@ -24,6 +24,10 @@ func setup(fileMap map[string]string) {
   test := make([]string, 1)
   test[0] = "account"
 
+  // test the 'official' pretendo servers
+  testOfficial := make([]string, 1)
+  testOfficial[0] = "account"
+
   // file status map
   fileStat := make(map[string]string)
   fileStat["ne"] = "nonexistent"
@@ -98,15 +102,17 @@ func setup(fileMap map[string]string) {
 
       // parse it
       err2 := json.Unmarshal([]byte(res), &parsedRes)
-      if err2 != nil {
-        if err == nil {
-          fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", test[x])
-          panic(err2)
+      if res != "" {
+        if err2 != nil {
+          if err == nil {
+            fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", test[x])
+            panic(err2)
+          }
         }
       }
 
       // handle the results
-      if (parsedRes.Server == serverResFor(test[x])) && (err == nil) {
+      if (parsedRes.Server == serverResFor(test[x])) && (err == nil) && (res != "") {
         fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
         result[x] = true
       } else {
@@ -116,15 +122,68 @@ func setup(fileMap map[string]string) {
 
     }
 
+    // show the user that we are detecting the official server
+    fmt.Printf(" 2. attempting to test endpoints on the official server\n")
+
+    // test for endpoints on the official pretendo servers
+    resultOfficial := make([]bool, len(testOfficial))
+    for x := 0; x < len(testOfficial); x++ {
+
+      // test the endpoint
+      fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x]))
+
+      // get the json
+      res2, err3 := get(endpointsFor("official", testOfficial[x]))
+      // prepare a struct for the json
+      var parsedRes2 isitworkingStruct
+
+      // parse it
+      err4 := json.Unmarshal([]byte(res2), &parsedRes2)
+      if res2 != "" {
+        if err4 != nil {
+          if err3 == nil {
+            fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", testOfficial[x])
+            panic(err4)
+          }
+        }
+      }
+
+      // handle the results
+      if (parsedRes2.Server == serverResFor(testOfficial[x])) && (err3 == nil) && (res2 != "") {
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("success"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        resultOfficial[x] = true
+      } else {
+        fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s %s -> %s", utilIcons("failiure"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s ", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+        resultOfficial[x] = false
+      }
+
+    }
+
     // print out the results
     fmt.Printf("-- printing results of tests\n")
     for x := 0; x < len(test); x++ {
+
+      // add a header saying that these are local results
+      fmt.Printf("- local\n")
 
       // print the results
       if result[x] == true {
         fmt.Printf(" %s: success\n", test[x])
       } else {
         fmt.Printf(" %s: failiure\n", test[x])
+      }
+
+    }
+    for x := 0; x < len(testOfficial); x++ {
+
+      // add a header saying that these are official results
+      fmt.Printf("- pretendo\n")
+
+      // print the results
+      if resultOfficial[x] == true {
+        fmt.Printf(" %s: success\n", testOfficial[x])
+      } else {
+        fmt.Printf(" %s: failiure\n", testOfficial[x])
       }
 
     }
