@@ -60,8 +60,8 @@ func utilIcons(kind string) string {
   iconMap := make(map[string]string)
 
   // place the icons in
-  iconMap["success"] = "✔"
-  iconMap["failiure"] = "✖"
+  iconMap["success"] = "√"
+  iconMap["failiure"] = "×"
   iconMap["uncertain"] = "-"
 
   // return the string
