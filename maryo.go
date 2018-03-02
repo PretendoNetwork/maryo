@@ -17,6 +17,7 @@ import (
   "time"
   "os"
   "encoding/json"
+  "strings"
   // externals
   "github.com/shiena/ansicolor"
 )
@@ -65,7 +66,7 @@ func setup(fileMap map[string]string) {
     fmt.Printf(" proxy?                                 > config creation    \n")
     fmt.Printf(" 1. automatic                             confirm prefs      \n")
     fmt.Printf(" 2. custom                                display proxy info \n")
-    fmt.Printf(" 3. stock                                                    \n")
+    fmt.Printf(" 3. template                                                 \n")
     fmt.Printf("                                                             \n")
     fmt.Printf(" -> (1|2|3)                                                  \n")
     fmt.Printf("=============================================================\n")
@@ -98,7 +99,7 @@ func setup(fileMap map[string]string) {
       fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x]))
 
       // get the json
-      res, err := get(endpointsFor("local", test[x]))
+      res, err := get(strings.Join([]string { endpointsFor("local", test[x]), "/isthisworking" }, ""))
 
       // prepare a struct for the json
       var parsedRes isitworkingStruct
@@ -146,7 +147,7 @@ func setup(fileMap map[string]string) {
       fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x]))
 
       // get the json
-      res2, err3 := get(endpointsFor("official", testOfficial[x]))
+      res2, err3 := get(strings.Join([]string { endpointsFor("official", testOfficial[x]), "/isthisworking" }, ""))
       // prepare a struct for the json
       var parsedRes2 isitworkingStruct
 
@@ -184,7 +185,7 @@ func setup(fileMap map[string]string) {
 
     // print out the results
     fmt.Printf("-- printing results of tests\n")
-    for x := 0; x < len(test); x++ {
+    for x := 0; x < len(result); x++ {
 
       // add a header saying that these are local results
       fmt.Printf("- local\n")
@@ -197,7 +198,7 @@ func setup(fileMap map[string]string) {
       }
 
     }
-    for x := 0; x < len(testOfficial); x++ {
+    for x := 0; x < len(resultOfficial); x++ {
 
       // add a header saying that these are official results
       fmt.Printf("- pretendo\n")
@@ -209,6 +210,62 @@ func setup(fileMap map[string]string) {
         fmt.Printf(" %s: failiure\n", testOfficial[x])
       }
 
+    }
+
+    // begin creating the config
+    fmt.Printf("-- creating config file\n")
+
+    // create cfgTest, cfgResult, and using variables
+    var using     string
+    var cfgTest   []string
+    var cfgResult []bool
+
+    // local servers have priority
+    if len(test) != 0 {
+      using     = "local"
+      cfgTest   = test
+      cfgResult = result
+    } else {
+      using     = "official"
+      cfgTest   = testOfficial
+      cfgResult = resultOfficial
+    }
+
+    // make a map for the config
+    config := make(map[string]string)
+
+    // apply a nice helping of all of the working endpoints to the config
+    for x := 0; x < len(cfgTest); x++ {
+      if cfgResult[x] == true {
+        config[endpointsFor("ninty", cfgTest[x])] = endpointsFor(using, cfgTest[x])
+      }
+    }
+
+    // idk what to do after this
+    stringifiedConfig, err := json.Marshal(config)
+    if err != nil {
+      fmt.Printf("[err] : error when stringifying json")
+    }
+
+    // place it into the file
+    if fileMap["config"] == "iv" {
+      deleteFile("config.json")
+      createFile("config.json")
+      writeByteToFile("config.json", stringifiedConfig)
+    } else if fileMap["config"] == "ne" {
+      createFile("config.json")
+      writeByteToFile("config.json", stringifiedConfig)
+    } else if fileMap["config"] == "uk" {
+      // detect status of config and do the
+      // things to write to it.
+      if doesFileExist("config.json") == true {
+        deleteFile("config.json")
+        createFile("config.json")
+        writeByteToFile("config.json", stringifiedConfig)
+      } else {
+        createFile("config.json")
+        writeByteToFile("config.json", stringifiedConfig)
+      }
     }
 
   } else if method == "2" {

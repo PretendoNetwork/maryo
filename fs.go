@@ -95,6 +95,18 @@ func writeFile(file string, data string) {
 
 }
 
+// write byte to file
+func writeByteToFile(file string, data []byte) {
+
+	// write to file
+	err := ioutil.WriteFile(file, data, 0644)
+	if err != nil {
+		fmt.Printf("[err] : error writing to file %s.. (does it exist?)\n", file)
+		panic(err)
+	}
+
+}
+
 // check if file is valid JSON
 func checkJSONValidity(file string) bool {
 

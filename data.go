@@ -21,16 +21,15 @@ func endpointsFor(kind string, subdomain string) string {
 
   // official
   testEndpoints["official"] = make(map[string]string)
-  testEndpoints["official"]["account"] = "http://account.pretendo.cc/v1/api/isthisworking"
+  testEndpoints["official"]["account"] = "http://account.pretendo.cc"
 
   // local (with testing_env set)
   testEndpoints["local"] = make(map[string]string)
-  testEndpoints["local"]["account"] = "http://127.0.0.1:8080/v1/api/isthisworking"
+  testEndpoints["local"]["account"] = "http://127.0.0.1:8080"
 
   // custom (if you modified the HOSTS file or if it is on another service)
   testEndpoints["custom"] = make(map[string]string)
   testEndpoints["custom"]["protocol"] = "http://"
-  testEndpoints["custom"]["account"] = "/v1/api/isthisworking"
 
   // official nintendo ones
   testEndpoints["ninty"] = make(map[string]string)
