@@ -12,10 +12,10 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
-	"fmt"
-	"os"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -24,7 +24,7 @@ import (
 func doesFileExist(file string) bool {
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	_, err = os.Stat(strings.Join([]string { dir, "/", file }, ""))
+	_, err = os.Stat(strings.Join([]string{dir, "/", file}, ""))
 	if err != nil {
 		return false
 	}
@@ -122,9 +122,8 @@ func checkJSONValidity(file string) bool {
 	// check for errors
 	if err != nil {
 		return false
-	} else {
-		return true
 	}
+	return true
 
 }
 

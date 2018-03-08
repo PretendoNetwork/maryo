@@ -14,6 +14,8 @@ type isitworkingStruct struct {
   Server string `json:"server"`
 }
 
+type 
+// 
 func endpointsFor(kind string, subdomain string) string {
 
   // endpoint map
