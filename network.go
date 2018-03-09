@@ -12,13 +12,13 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
-	"os"
-	"io/ioutil"
 )
 
 /* net utils */
@@ -40,7 +40,7 @@ func downloadFile(args []string) {
 
 	// detect if file already exists
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	_, err = os.Stat(strings.Join([]string { dir, "/", downloadTo }, ""))
+	_, err = os.Stat(strings.Join([]string{dir, "/", downloadTo}, ""))
 	if err == nil {
 		fmt.Printf("[err] : file %s already exists.. (did you try running this program already?)\n", downloadTo)
 		panic(err)
@@ -63,15 +63,13 @@ func downloadFile(args []string) {
 	defer res.Body.Close()
 
 	// copy url contents to file
-	bytes, err := io.Copy(oput, res.Body)
+	_, err = io.Copy(oput, res.Body)
 	if err != nil {
 		fmt.Printf("[err] : error copying data from %s to %s.. (is %s in the working directory?)\n", args[0], downloadTo, downloadTo)
 		panic(err)
 	}
 
-	fmt.Printf("successfully copied %s bytes from %s to %s\n", bytes, args[0], downloadTo)
 }
-
 
 // function to get data from a URL.
 // based on https://www.github.com/thbar/golang-playground/blob/master/download-files.go

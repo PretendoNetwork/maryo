@@ -96,10 +96,10 @@ func setup(fileMap map[string]string) {
 		for x := 0; x < len(test); x++ {
 
 			// test the endpoint
-			fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x]))
+			fmt.Printf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]])
 
 			// get the json
-			res, err := get(strings.Join([]string{endpointsFor("local", test[x]), "/isthisworking"}, ""))
+			res, err := get(strings.Join([]string{testEndpoints["local"][test[x]], "/isthisworking"}, ""))
 
 			// prepare a struct for the json
 			var parsedRes isitworkingStruct
@@ -116,20 +116,20 @@ func setup(fileMap map[string]string) {
 			}
 
 			// handle the results
-			if (parsedRes.Server == serverResFor(test[x])) && (err == nil) && (res != "") {
+			if (parsedRes.Server == resMap[test[x]]) && (err == nil) && (res != "") {
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
-					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				} else {
-					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				}
 				result[x] = true
 			} else {
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
-					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				} else {
-					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", test[x]), endpointsFor("local", test[x])), " "))
+					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				}
 				result[x] = false
 			}
@@ -144,10 +144,10 @@ func setup(fileMap map[string]string) {
 		for x := 0; x < len(testOfficial); x++ {
 
 			// test the endpoint
-			fmt.Printf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x]))
+			fmt.Printf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]])
 
 			// get the json
-			res2, err3 := get(strings.Join([]string{endpointsFor("official", testOfficial[x]), "/isthisworking"}, ""))
+			res2, err3 := get(strings.Join([]string{testEndpoints["official"][testOfficial[x]], "/isthisworking"}, ""))
 			// prepare a struct for the json
 			var parsedRes2 isitworkingStruct
 
@@ -163,20 +163,20 @@ func setup(fileMap map[string]string) {
 			}
 
 			// handle the results
-			if (parsedRes2.Server == serverResFor(testOfficial[x])) && (err3 == nil) && (res2 != "") {
+			if (parsedRes2.Server == resMap[testOfficial[x]]) && (err3 == nil) && (res2 != "") {
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
-					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				} else {
-					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons("success"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				}
 				resultOfficial[x] = true
 			} else {
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
-					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				} else {
-					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons("failiure"), code("reset"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), fmt.Sprintf("  %s %s -> %s", utilIcons("uncertain"), endpointsFor("ninty", testOfficial[x]), endpointsFor("official", testOfficial[x])), " "))
+					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				}
 				resultOfficial[x] = false
 			}
@@ -237,7 +237,7 @@ func setup(fileMap map[string]string) {
 		// apply a nice helping of all of the working endpoints to the config
 		for x := 0; x < len(cfgTest); x++ {
 			if cfgResult[x] == true {
-				config[endpointsFor("ninty", cfgTest[x])] = endpointsFor(using, cfgTest[x])
+				config[testEndpoints["ninty"][cfgTest[x]]] = testEndpoints[using][cfgTest[x]]
 			}
 		}
 
