@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 	// externals
@@ -80,12 +81,16 @@ func setup(fileMap map[string]string) {
 		}
 	}
 
+	// create config var
+	var config map[string]string
+
 	// show log when
 	clear()
 	fmt.Printf("== maryo -> setup ===========================================\n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf(" configuring proxy..                                         \n")
 	fmt.Printf(" current config status: %s\n", fileStat[fileMap["config"]])
+	// automatic config making
 	if method == "1" {
 		fmt.Printf(" method: automatic..\n")
 		fmt.Printf("-- beginning tests\n")
@@ -232,7 +237,7 @@ func setup(fileMap map[string]string) {
 		}
 
 		// make a map for the config
-		config := make(map[string]string)
+		config = make(map[string]string)
 
 		// apply a nice helping of all of the working endpoints to the config
 		for x := 0; x < len(cfgTest); x++ {
@@ -241,47 +246,72 @@ func setup(fileMap map[string]string) {
 			}
 		}
 
-		// idk what to do after this
-		stringifiedConfig, err := json.Marshal(config)
-		if err != nil {
-			fmt.Printf("[err] : error when stringifying json")
-		}
-
-		// place it into the file
-		if fileMap["config"] == "iv" {
-			deleteFile("config.json")
-			createFile("config.json")
-			writeByteToFile("config.json", stringifiedConfig)
-		} else if fileMap["config"] == "ne" {
-			createFile("config.json")
-			writeByteToFile("config.json", stringifiedConfig)
-		} else if fileMap["config"] == "uk" {
-			// detect status of config and do the
-			// things to write to it.
-			if doesFileExist("config.json") == true {
-				deleteFile("config.json")
-				createFile("config.json")
-				writeByteToFile("config.json", stringifiedConfig)
-			} else {
-				createFile("config.json")
-				writeByteToFile("config.json", stringifiedConfig)
-			}
-		}
-
 		// creating a custom config
 	} else if method == "2" {
 		fmt.Printf(" method: custom..\n")
+
+		// number of values in the config
+		numVals := 0
+
+		// config
+		config = make(map[string]string)
+
+		// temp vars
+		var inputtedFrom string
+		var inputtedTo string
+
+		for true {
+			clear()
+
+			// reset temporary vars
+			inputtedFrom = ""
+			inputtedTo = ""
+
+			// display ui
+			fmt.Printf(" you have %s redirection(s) already in\n", strconv.Itoa(numVals))
+			fmt.Printf(" press <Enter> on an empty line to stop\n")
+
+			// ask for conf vals
+			inputtedFrom = input("from: ")
+			if inputtedFrom == "" {
+				break
+			}
+			inputtedTo = input("to: ")
+			if inputtedTo == "" {
+				break
+			}
+
+			// place them in the config var
+			config[inputtedFrom] = inputtedTo
+
+			// update info
+			numVals++
+
+		}
 		// loading a template
 	} else if method == "3" {
+
+		// template variable since i have to reserve it
+		var tmpl string
+
+		// ask for choice
 		fmt.Printf(" method: template..\n")
 		for true {
+			clear()
+
+			// show ui
 			fmt.Printf("-- please select a template\n")
 			fmt.Printf(" 1. local server\n")
 			fmt.Printf(" 2. pretendo servers\n")
+			// TODO: make official servers work
 			// not adding this one until i can figure out how
 			// to make ClientCertificate.cer work
 			// fmt.Printf(" 3. official servers\n")
-			tmpl := input(": ")
+
+			// ask for input
+			tmpl = input(": ")
+
+			// break if it's a valid option
 			if (tmpl == "1") || (tmpl == "2") {
 				break
 			} else {
@@ -289,8 +319,41 @@ func setup(fileMap map[string]string) {
 				time.Sleep(1500 * time.Millisecond)
 			}
 		}
-		// load the selected template
 
+		// load the selected template into the config var
+		if tmpl == "1" {
+			config = localConf
+		} else if tmpl == "2" {
+			config = pretendoConf
+		}
+
+	}
+
+	// idk what to do after this
+	stringifiedConfig, err := json.Marshal(config)
+	if err != nil {
+		fmt.Printf("[err] : error when stringifying json")
+	}
+
+	// place it into the file
+	if fileMap["config"] == "iv" {
+		deleteFile("config.json")
+		createFile("config.json")
+		writeByteToFile("config.json", stringifiedConfig)
+	} else if fileMap["config"] == "ne" {
+		createFile("config.json")
+		writeByteToFile("config.json", stringifiedConfig)
+	} else if fileMap["config"] == "uk" {
+		// detect status of config and do the
+		// things to write to it.
+		if doesFileExist("config.json") == true {
+			deleteFile("config.json")
+			createFile("config.json")
+			writeByteToFile("config.json", stringifiedConfig)
+		} else {
+			createFile("config.json")
+			writeByteToFile("config.json", stringifiedConfig)
+		}
 	}
 
 }
