@@ -12,12 +12,15 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+	// internals
 	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	// externals
+	"github.com/shiena/ansicolor"
 )
 
 
@@ -93,7 +96,13 @@ func input(prompt string) string {
 }
 
 // shorthand for len([]rune(x))
-func length(x string) int { return len([]rune(x)); }
+func length(x string) int {
+
+	// something that is extremely
+	// useful to have and use
+	return len([]rune(x))
+
+}
 
 // pad string to match the length of another string
 func padStrToMatchStr(pad string, match string, padWith string) string {
@@ -118,15 +127,33 @@ func padStrToMatchStr(pad string, match string, padWith string) string {
 }
 
 // is it windows
-func isWindows() bool { return (runtime.GOOS == "windows"); }
+func isWindows() bool {
+
+	// shorthand for this since
+	// i have to use windows specific code a lot
+	return (runtime.GOOS == "windows")
+
+}
 
 /* give terminal style */
 
 // set terminal title
-func ttitle(title string) { fmt.Print(strings.Join([]string {"\033]0;",title,"\007"}, "")); }
+func ttitle(title string) {
+
+	// an easier way of setting term title
+	// since doing this every time can be a pain
+	fmt.Print(strings.Join([]string {"\033]0;",title,"\007"}, ""))
+
+}
 
 // output a formatted escape code for 8/16 bit color
-func tcolor(cid int) string { return strings.Join([]string {"\033[",string(cid),"m"}, ""); }
+func tcolor(cid int) string {
+
+	// again, another shorthand for a complex
+	// thing that can be a pain
+	return strings.Join([]string {"\033[",string(cid),"m"}, "")
+
+}
 
 // terminal color codes
 func code(index string) string {
@@ -140,7 +167,18 @@ func code(index string) string {
 	if runtime.GOOS == "darwin" { ansiTrick(); }
 
 	// fix prefix for windows
-	if isWindows() { prefix = "\x1b"; } else { prefix = "\033"; }
+	if isWindows() {
+
+		// prefix that the terminal
+		// color lib uses
+		prefix = "\x1b"
+
+	} else {
+
+		// standard octal code prefix
+		prefix = "\033"
+
+	}
 
 	// codes go here
 
@@ -165,4 +203,27 @@ func code(index string) string {
 	// output the correct terminal color code
 	return strings.Join([]string {prefix,termCodes[index]}, "")
 
+}
+
+// function to send a colored console output to the terminal
+func consoleSequence(message string) {
+
+	// things are different for windows
+	// *shrug*
+	if isWindows() {
+
+		// make that writer
+		Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
+
+		// then output it to the term
+		fmt.Fprintf(Writer, message)
+
+	// if it isn't windows, assume you can
+	// use standard ansi escapes
+	} else {
+
+		// just print it
+		fmt.Printf(message)
+
+	}
 }
