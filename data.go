@@ -14,6 +14,8 @@ type isitworkingStruct struct {
 	Server string `json:"server"`
 }
 
+// TODO: somewhere in here include a list containing a list of templates to add
+
 // pretendo stock config
 var pretendoConf = map[string]string{"account.nintendo.net": "http://account.pretendo.cc"}
 
