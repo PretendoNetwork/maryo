@@ -344,7 +344,7 @@ func setup(fileMap map[string]string) {
 	}
 
 	// prettify the JSON
-	pretty, err := json.MarshalIndent(config, "", "    ")
+	pretty, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		fmt.Printf("[err] : error while prettifying JSON\n")
 		panic(err)
@@ -374,6 +374,7 @@ func setup(fileMap map[string]string) {
 			break
 		} else {
 			fmt.Printf("-> please enter y or n")
+			time.Sleep(1500 * time.Millisecond)
 		}
 	}
 
