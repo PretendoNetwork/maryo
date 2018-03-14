@@ -51,7 +51,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" welcome to the maryo setup wizard.     > intro              \n")
 	fmt.Printf(" this program will walk you through       config creation    \n")
 	fmt.Printf(" setting up your very own Pretendo        confirm prefs      \n")
-	fmt.Printf(" proxy server for accessing the server.   display proxy info \n")
+	fmt.Printf(" proxy server for accessing the server.   profit???          \n")
 	fmt.Printf(" -> press enter                                              \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
@@ -67,7 +67,7 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" how would you like to configure the      intro              \n")
 		fmt.Printf(" proxy?                                 > config creation    \n")
 		fmt.Printf(" 1. automatic                             confirm prefs      \n")
-		fmt.Printf(" 2. custom                                display proxy info \n")
+		fmt.Printf(" 2. custom                                profit???          \n")
 		fmt.Printf(" 3. template                                                 \n")
 		fmt.Printf("                                                             \n")
 		fmt.Printf(" -> (1|2|3)                                                  \n")
@@ -362,7 +362,7 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" are you okay with the settings below?    intro              \n")
 		fmt.Printf("                                          config creation    \n")
 		fmt.Printf("                                        > confirm prefs      \n")
-		fmt.Printf("                                          display proxy info \n")
+		fmt.Printf("                                          profit???          \n")
 		fmt.Printf("                                                             \n")
 		fmt.Printf(prettifiedJSON)
 		fmt.Printf("\n                                                             \n")
@@ -408,5 +408,25 @@ func setup(fileMap map[string]string) {
 			writeByteToFile("config.json", stringifiedConfig)
 		}
 	}
+
+	// show them the finished screen
+	clear()
+
+	// display the UI
+	fmt.Printf("== maryo -> setup ===========================================\n")
+	fmt.Printf("                                        Steps:               \n")
+	fmt.Printf(" congratulations, you are finished        intro              \n")
+	fmt.Printf(" setting up maryo!                        config creation    \n")
+	fmt.Printf(" -> press enter                           confirm prefs      \n")
+	fmt.Printf("                                        > profit???          \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("=============================================================\n")
+	_ = input("")
+
+	// display a message saying that they need to restart the program to use the new config
+	clear()
+	fmt.Printf("run this program again to use the new configuration\n")
 
 }

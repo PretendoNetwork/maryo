@@ -11,14 +11,14 @@ if you want a copy, go to http://www.gnu.org/licenses/
 
 package main
 
-import (
-  //"github.com/cssivision/reverseproxy"
-  //"os"
-  "fmt"
-)
+//"github.com/cssivision/reverseproxy"
+//"os"
 
-func startProxy() {
+func startProxy(configName string) {
 
-  ttitle("maryo -> proxy")
-  fmt.Printf("hey, you're here!")
+	// set the terminal title
+	ttitle("maryo -> proxy")
+
+	// get the config data
+	//config := readJSONFile(configName)
 }
