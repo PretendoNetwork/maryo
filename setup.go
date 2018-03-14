@@ -213,10 +213,12 @@ func setup(fileMap map[string]string) {
 		fmt.Printf("-- generating config\n")
 
 		// create cfgTest, cfgResult, using, and useLocal variables
+		// also make the really long name variable
 		var using string
 		var cfgTest []string
 		var cfgResult []bool
 		var useLocal bool
+		var doesOfficialHaveAnyWorkingEndpoints bool
 
 		// scan the local server result list to see if any are true, since they have priority
 		useLocal = false
@@ -232,9 +234,30 @@ func setup(fileMap map[string]string) {
 			cfgTest = test
 			cfgResult = result
 		} else {
-			using = "official"
-			cfgTest = testOfficial
-			cfgResult = resultOfficial
+
+			// check this first to see if official even works
+			for x := 0; x < len(resultOfficial); x++ {
+				doesOfficialHaveAnyWorkingEndpoints = false
+				if resultOfficial[x] == true {
+					doesOfficialHaveAnyWorkingEndpoints = true
+				}
+			}
+
+			if doesOfficialHaveAnyWorkingEndpoints == true {
+
+				// set these if it does
+				using = "official"
+				cfgTest = testOfficial
+				cfgResult = resultOfficial
+
+			} else {
+
+				// exit the program
+				clear()
+				fmt.Printf("no servers are running currently, please try again later.")
+				os.Exit(0)
+
+			}
 		}
 
 		// make a map for the config

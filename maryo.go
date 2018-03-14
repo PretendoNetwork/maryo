@@ -71,8 +71,11 @@ func main() {
 			fmt.Printf(" 3. fix the config\n")
 			os.Exit(1)
 		
-			} else {
+		} else {
+
+			// start the proxy
 			startProxy(*config)
+			
 		}
 
 		// run setup function and load proxy
