@@ -24,19 +24,98 @@ import (
 /* terminal utils */
 
 // function to clear the screen
-func clear() { if runtime.GOOS == "windows" { cmd := exec.Command("cmd", "/c", "cls"); cmd.Stdout = os.Stdout; err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing cls. (report this issue)\n"); panic(err); }; } else { fmt.Printf("\033[2J\033[;H"); }; }
+func clear() {
+
+	// detect if the host OS is Windows
+	if runtime.GOOS == "windows" {
+
+		// if it is, then use the native `cls` command to
+		// clear the screen
+		cmd := exec.Command("cmd", "/c", "cls")
+
+		// because of the way things work, we have to pipe output
+		// directly to the main stdout
+		cmd.Stdout = os.Stdout
+
+		// then run the command
+		err := cmd.Run()
+
+		// handle errors correctly
+		if err != nil {
+			fmt.Printf("[err] : error while executing cls. (report this issue)\n")
+			panic(err)
+		}
+
+	} else {
+
+		// if it is some ANSI escape code respecive OS,
+		// use the clear code
+		fmt.Printf("\033[2J\033[;H")
+
+	}
+}
 
 // trick Terminal.app to respect ANSI color codes
-func ansiTrick() { cmd := exec.Command("export", "TERM=xterm"); err := cmd.Run(); if err != nil { fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n"); panic(err); }; }
+func ansiTrick() {
+
+	// run the export command to set the terminal type to
+	// an escape code respective term
+	// (i'm not even sure if this works)
+	cmd := exec.Command("export", "TERM=xterm")
+
+	// run the command
+	err := cmd.Run()
+
+	// handle errors correctly
+	if err != nil {
+		fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n")
+		panic(err)
+	}
+
+}
 
 // get terminal input
-func input(prompt string) string { fmt.Printf(prompt); scanner := bufio.NewScanner(os.Stdin); scanner.Scan(); return scanner.Text(); }
+// (for the amount of times i have to get term input, i need this)
+func input(prompt string) string {
+
+	// print a prompt
+	fmt.Printf(prompt)
+
+	// create a scanner to get user input
+	scanner := bufio.NewScanner(os.Stdin)
+
+	// run the scanner
+	scanner.Scan()
+
+	// return the user-supplied input
+	return scanner.Text()
+
+}
 
 // shorthand for len([]rune(x))
 func length(x string) int { return len([]rune(x)); }
 
 // pad string to match the length of another string
-func padStrToMatchStr(pad string, match string, padWith string) string { if length(padWith) != 1 { fmt.Printf("[err] : '%s' is not 1 character long", padWith); os.Exit(1); }; for x := 0; x < length(match); x++ { pad += padWith; }; return pad; }
+func padStrToMatchStr(pad string, match string, padWith string) string {
+
+	// make sure the character to pad it is only 1 character
+	if length(padWith) != 1 {
+
+		// throw an error if it isn't
+		fmt.Printf("[err] : '%s' is not 1 character long", padWith)
+		os.Exit(1)
+
+	}
+
+	// pad the string to match the length of the other
+	for x := 0; x < length(match); x++ {
+		pad += padWith
+	}
+
+	// return the padded string
+	return pad
+
+}
 
 // is it windows
 func isWindows() bool { return (runtime.GOOS == "windows"); }
