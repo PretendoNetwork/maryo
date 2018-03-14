@@ -123,6 +123,9 @@ func setup(fileMap map[string]string) {
 
 			// handle the results
 			if (parsedRes.Server == resMap[test[x]]) && (err == nil) && (res != "") {
+
+				// things are different for windows
+				// *shrug*
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
 					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
@@ -130,7 +133,10 @@ func setup(fileMap map[string]string) {
 					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				}
 				result[x] = true
+
 			} else {
+
+				// "ditto"
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
 					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
@@ -138,6 +144,7 @@ func setup(fileMap map[string]string) {
 					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]]), " "))
 				}
 				result[x] = false
+
 			}
 
 		}
@@ -170,6 +177,9 @@ func setup(fileMap map[string]string) {
 
 			// handle the results
 			if (parsedRes2.Server == resMap[testOfficial[x]]) && (err3 == nil) && (res2 != "") {
+
+				// again, windows is just a pain to
+				// deal with
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
 					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
@@ -177,7 +187,11 @@ func setup(fileMap map[string]string) {
 					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("green"), code("bold"), utilIcons["success"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				}
 				resultOfficial[x] = true
+
 			} else {
+
+				// the amount of times i had to do this
+				// *sigh*
 				if isWindows() {
 					Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
 					fmt.Fprintf(Writer, "%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
@@ -185,6 +199,7 @@ func setup(fileMap map[string]string) {
 					fmt.Printf("%s\n", padStrToMatchStr(fmt.Sprintf("\r  %s%s%s%s %s -> %s", code("red"), code("bold"), utilIcons["failiure"], code("reset"), testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), fmt.Sprintf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]]), " "))
 				}
 				resultOfficial[x] = false
+
 			}
 
 		}
