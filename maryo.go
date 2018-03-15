@@ -14,7 +14,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
 )
 
 // main function
@@ -39,14 +38,14 @@ func main() {
 
 		// config.json -- if nonexistent, it follows the user's instruction to create one, or use a builtin copy
 		fileMap["config"] = "ne"
-		} doesFileExist(*config) != false {
-			
+		if doesFileExist(*config) != false {
+
 			// check if the file is valid JSON
 			if checkJSONValidity(*config) != true {
-				
+
 				// set fileMap to have the correct status for the file
 				fileMap["config"] = "iv"
-		
+
 			} else {
 
 				// "ditto"
@@ -57,10 +56,10 @@ func main() {
 
 		// do the setup function if the file isn't completely correct
 		if fileMap["config"] == "ne" {
-		
+
 			// perform setup
 			setup(fileMap)
-		
+
 		} else if fileMap["config"] == "iv" {
 
 			// i'm not just going to perform autosetup because they might have some stuff in there
@@ -70,12 +69,12 @@ func main() {
 			fmt.Printf(" 2. delete the config and run this program\n")
 			fmt.Printf(" 3. fix the config\n")
 			os.Exit(1)
-		
+
 		} else {
 
 			// start the proxy
 			startProxy(*config)
-			
+
 		}
 
 		// run setup function and load proxy

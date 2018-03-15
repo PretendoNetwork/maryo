@@ -13,10 +13,18 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+	// internals
+
 	"fmt"
+	"log"
+	"net/http"
+	// externals
+	"github.com/elazarl/goproxy"
 )
-//"github.com/cssivision/reverseproxy"
+
 //"os"
+// set this over here for no issues
+var config map[string]interface{}
 
 func startProxy(configName string) {
 
@@ -24,7 +32,16 @@ func startProxy(configName string) {
 	ttitle("maryo -> proxy")
 
 	// get the config data
-	//config := readJSONFile(configName)
+	config = readJSONFile(configName)
 
-	consoleSequence(fmt.Sprintf("hey, just a %stest%s message\n", code("red"), code("reset")))
+	// verify config data
+
+	fmt.Printf("-- proxy log --\n")
+	consoleSequence(fmt.Sprintf("-> local IP addresss is %s%s%s\n", code("green"), getIP(), code("reset")))
+	consoleSequence(fmt.Sprintf("-> hosting proxy on %s:9437%s\n", code("green"), code("reset")))
+
+	// load that proxy
+	proxy := goproxy.NewProxyHttpServer()
+	proxy.Verbose = true
+	log.Fatal(http.ListenAndServe(":9437", proxy))
 }
