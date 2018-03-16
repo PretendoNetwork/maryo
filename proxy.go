@@ -42,6 +42,43 @@ func startProxy(configName string, logging bool) {
 
 	// load that proxy
 	proxy := goproxy.NewProxyHttpServer()
+
+	// set some settings
 	proxy.Verbose = true
+
+	// set up the proxy
+
+	// request handler
+	proxy.OnRequest().DoFunc(
+		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
+
+			// log the request
+			consoleSequence(fmt.Sprintf("-> request to %s%s%s\n", code("green"), r.URL.Host, code("reset")))
+
+			// just return nil for response, since we aren't modifying it
+			return r, nil
+
+		})
+
+	// request handler for every redirect in the config
+	for k, v := range config {
+
+		// make a request handler
+		proxy.OnRequest(goproxy.DstHostIs(k)).DoFunc(
+			func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
+
+				// log the request
+				consoleSequence(fmt.Sprintf("-> redirecting %s%s%s to %s%s%s\n", code("green"), r.URL.Host, code("reset"), code("green"), v, code("reset")))
+
+				// redirect it
+				r.URL.Host = v.(string)
+
+				// just return nil for response, since we aren't modifying it
+				return r, nil
+
+			})
+	}
+
+	// start the proxy
 	log.Fatal(http.ListenAndServe(":9437", proxy))
 }

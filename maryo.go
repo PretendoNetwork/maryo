@@ -19,6 +19,9 @@ import (
 // main function
 func main() {
 
+	// reset term colors
+	consoleSequence(fmt.Sprintf("%s", code("reset")))
+
 	// parse some flags here
 	config := flag.String("config", "config.json", "value for config file path")
 	logging := flag.Bool("logging", false, "if set, the proxy will log all request data (only needed for debugging)")
