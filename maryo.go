@@ -21,7 +21,7 @@ func main() {
 
 	// parse some flags here
 	config := flag.String("config", "config.json", "value for config file path")
-	//logging := flag.Bool("logging", false, "if set, the proxy will log all requests and data")
+	logging := flag.Bool("logging", false, "if set, the proxy will log all request data (only needed for debugging)")
 	doSetup := flag.Bool("setup", false, "if set, maryo will go through setup again")
 	flag.Parse()
 
@@ -73,7 +73,7 @@ func main() {
 		} else {
 
 			// start the proxy
-			startProxy(*config)
+			startProxy(*config, *logging)
 
 		}
 

@@ -26,7 +26,7 @@ import (
 // set this over here for no issues
 var config map[string]interface{}
 
-func startProxy(configName string) {
+func startProxy(configName string, logging bool) {
 
 	// set the terminal title
 	ttitle("maryo -> proxy")
