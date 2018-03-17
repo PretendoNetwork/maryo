@@ -17,13 +17,13 @@ type isitworkingStruct struct {
 // TODO: somewhere in here include a list containing a list of templates to add
 
 // pretendo stock config
-var pretendoConf = map[string]string{"account.nintendo.net": "http://account.pretendo.cc"}
+var pretendoConf = map[string]string{"account.nintendo.net": "account.pretendo.cc"}
 
 // local stock config
-var localConf = map[string]string{"account.nintendo.net": "http://127.0.0.1:8080"}
+var localConf = map[string]string{"account.nintendo.net": "127.0.0.1:8080"}
 
 // test endpoints
-var testEndpoints = map[string]map[string]string{"official": map[string]string{"account": "http://account.pretendo.cc"}, "local": map[string]string{"account": "http://127.0.0.1:8080"}, "ninty": map[string]string{"account": "https://account.nintendo.net"}}
+var testEndpoints = map[string]map[string]string{"official": map[string]string{"account": "account.pretendo.cc"}, "local": map[string]string{"account": "127.0.0.1:8080"}, "ninty": map[string]string{"account": "account.nintendo.net"}}
 
 // supposed return value for custom servers
 var resMap = map[string]string{"account": "account.nintendo.net"}
