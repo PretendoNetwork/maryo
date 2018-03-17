@@ -49,7 +49,7 @@ func formatRequest(r *http.Request) string {
 	request = append(request, url)
 
 	// add the host
-	request = append(request, fmt.Sprintf("Host: %v", r.Host))
+	request = append(request, fmt.Sprintf("host: %v", r.Host))
 
 	// loop through headers
 	for name, headers := range r.Header {
