@@ -50,8 +50,9 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" welcome to the maryo setup wizard.     > intro              \n")
 	fmt.Printf(" this program will walk you through       config creation    \n")
 	fmt.Printf(" setting up your very own Pretendo        confirm prefs      \n")
-	fmt.Printf(" proxy server for accessing the server.   profit???          \n")
-	fmt.Printf(" -> press enter                                              \n")
+	fmt.Printf(" proxy server for accessing the server.   generate cert      \n")
+	fmt.Printf(" -> press enter                           profit???          \n")
+	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("=============================================================\n")
@@ -66,8 +67,9 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" how would you like to configure the      intro              \n")
 		fmt.Printf(" proxy?                                 > config creation    \n")
 		fmt.Printf(" 1. automatic                             confirm prefs      \n")
-		fmt.Printf(" 2. custom                                profit???          \n")
-		fmt.Printf(" 3. template                                                 \n")
+		fmt.Printf(" 2. custom                                generate cart      \n")
+		fmt.Printf(" 3. template                              profit???          \n")
+		fmt.Printf("                                                             \n")
 		fmt.Printf("                                                             \n")
 		fmt.Printf(" -> (1|2|3)                                                  \n")
 		fmt.Printf("=============================================================\n")
@@ -376,6 +378,7 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" are you okay with the settings below?    intro              \n")
 		fmt.Printf("                                          config creation    \n")
 		fmt.Printf("                                        > confirm prefs      \n")
+		fmt.Printf("                                          generate cert      \n")
 		fmt.Printf("                                          profit???          \n")
 		fmt.Printf("                                                             \n")
 		fmt.Printf(prettifiedJSON)
@@ -424,6 +427,21 @@ func setup(fileMap map[string]string) {
 		}
 	}
 
+	// generate a https cert
+	clear()
+
+	fmt.Printf("== maryo -> setup ===========================================\n")
+	fmt.Printf("                                        Steps:               \n")
+	fmt.Printf(" congratulations, you are finished        intro              \n")
+	fmt.Printf(" setting up maryo!                        config creation    \n")
+	fmt.Printf(" -> press enter                           confirm prefs      \n")
+	fmt.Printf("                                        > generate cert      \n")
+	fmt.Printf("                                          profit???          \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("                                                             \n")
+	fmt.Printf("=============================================================\n")
+
 	// show them the finished screen
 	clear()
 
@@ -433,6 +451,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" congratulations, you are finished        intro              \n")
 	fmt.Printf(" setting up maryo!                        config creation    \n")
 	fmt.Printf(" -> press enter                           confirm prefs      \n")
+	fmt.Printf("                                          generate cert      \n")
 	fmt.Printf("                                        > profit???          \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")

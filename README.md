@@ -12,8 +12,9 @@ it and follow the instructions
 ### building from source ~~(WARNING: EXTREMELY HARDCORE)~~
 #### prerequisites
 - [golang](https://golang.org/)
-- [reverseproxy](https://github.com/cssivision/reverseproxy)
+- [goproxy](https://github.com/elazarl/goproxy)
 - [ansicolor](https://github.com/shiena/ansicolor)
+- [httpscerts](https://github.com/kabukky/httpscerts)
 
 #### building
 1. clone this repository
