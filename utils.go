@@ -13,11 +13,15 @@ package main
 
 import (
 	// internals
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"strings"
+	// externals
+	"github.com/elazarl/goproxy"
 )
 
 // get the ip address of the machine
@@ -78,4 +82,46 @@ func formatRequest(r *http.Request) string {
 
 	// return the request as a string
 	return strings.Join(request, "\n")
+}
+
+// setting CA in goproxy
+func setCA(caCert, caKey []byte) error {
+
+	// get the keypair from cert and key data
+	goproxyCa, err := tls.X509KeyPair(caCert, caKey)
+
+	// handle error
+	if err != nil {
+
+		// return the error
+		return err
+
+	}
+
+	// again, handle errors
+	if goproxyCa.Leaf, err = x509.ParseCertificate(goproxyCa.Certificate[0]); err != nil {
+
+		// return the error
+		return err
+
+	}
+
+	// set the CA
+	goproxy.GoproxyCa = goproxyCa
+
+	// on connections, use it
+	goproxy.OkConnect = &goproxy.ConnectAction{Action: goproxy.ConnectAccept, TLSConfig: goproxy.TLSConfigFromCA(&goproxyCa)}
+
+	// on MITMed connections, use it
+	goproxy.MitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectMitm, TLSConfig: goproxy.TLSConfigFromCA(&goproxyCa)}
+
+	// on MITMed HTTP connections, use it
+	goproxy.HTTPMitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectHTTPMitm, TLSConfig: goproxy.TLSConfigFromCA(&goproxyCa)}
+
+	// on rejected connections, use it
+	goproxy.RejectConnect = &goproxy.ConnectAction{Action: goproxy.ConnectReject, TLSConfig: goproxy.TLSConfigFromCA(&goproxyCa)}
+
+	// then return nil since there were no errors
+	return nil
+
 }

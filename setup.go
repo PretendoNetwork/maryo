@@ -19,8 +19,66 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/kabukky/httpscerts"
 	// externals
 )
+
+// cert generation function here so i don't need to rewrite it in maryo.go
+func doCertGen() {
+
+	// clear the screen because why not?
+	clear()
+
+	// get the ip address for the cert
+	ip := getIP()
+
+	// show a neat info snippet
+	fmt.Printf("- generating certificate and key for %s\n", ip)
+
+	// create necissary directories for this
+
+	// maryo folder
+	if doesFileExist("maryo/") == false {
+
+		// make it
+		makeDirectory("maryo")
+
+	}
+
+	// clean the cert and key if they exist
+
+	// cert.pem
+	if doesFileExist("maryo/cert.pem") == true {
+
+		// delete the cert
+		deleteFile("maryo/cert.pem")
+
+	}
+
+	// key.pem
+	if doesFileExist("maryo/key.pem") == true {
+
+		// delete the key
+		deleteFile("maryo/key.pem")
+
+	}
+
+	// generate the needed cert and key
+	err := httpscerts.Generate("maryo/cert.pem", "maryo/key.pem", fmt.Sprintf("%s:9437", ip))
+
+	// handle the error (if there is one)
+	if err != nil {
+		fmt.Printf("[err]: error while generating a certificate and key for %s\n", ip)
+		panic(err)
+	}
+
+	// then say they were made
+	fmt.Printf("  finished\n")
+	fmt.Printf("\npress enter to continue...\n")
+	_ = input("")
+
+}
 
 // setup function goes here now
 func setup(fileMap map[string]string) {
@@ -69,16 +127,16 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" 1. automatic                             confirm prefs      \n")
 		fmt.Printf(" 2. custom                                generate cart      \n")
 		fmt.Printf(" 3. template                              profit???          \n")
+		fmt.Printf(" 4. skip this                                                \n")
 		fmt.Printf("                                                             \n")
-		fmt.Printf("                                                             \n")
-		fmt.Printf(" -> (1|2|3)                                                  \n")
+		fmt.Printf(" -> (1|2|3|4)                                                \n")
 		fmt.Printf("=============================================================\n")
 		method = input(": ")
 
-		if (method == "1") || (method == "2") || (method == "3") {
+		if (method == "1") || (method == "2") || (method == "3") || (method == "4") {
 			break
 		} else {
-			fmt.Printf("-> please enter 1, 2, or 3\n")
+			fmt.Printf("-> please enter 1, 2, 3, or 4\n")
 			time.Sleep(1500 * time.Millisecond)
 		}
 	}
@@ -359,71 +417,75 @@ func setup(fileMap map[string]string) {
 
 	}
 
-	// prettify the JSON
-	pretty, err := json.MarshalIndent(config, "", "  ")
-	if err != nil {
-		fmt.Printf("[err] : error while prettifying JSON\n")
-		panic(err)
-	}
-	prettifiedJSON := string(pretty[:])
+	// not everyone wants to generate a new config
+	if method != "4" {
 
-	// confirm the preferences
-	var areSettingsOkay string
-	for true {
-		clear()
-
-		// display the UI
-		fmt.Printf("== maryo -> setup ===========================================\n")
-		fmt.Printf("                                        Steps:               \n")
-		fmt.Printf(" are you okay with the settings below?    intro              \n")
-		fmt.Printf("                                          config creation    \n")
-		fmt.Printf("                                        > confirm prefs      \n")
-		fmt.Printf("                                          generate cert      \n")
-		fmt.Printf("                                          profit???          \n")
-		fmt.Printf("                                                             \n")
-		fmt.Printf(prettifiedJSON)
-		fmt.Printf("\n                                                             \n")
-		fmt.Printf("-> (y|n)                                                     \n")
-		fmt.Printf("=============================================================\n")
-		areSettingsOkay = input(": ")
-
-		if (areSettingsOkay == "y") || (areSettingsOkay == "n") {
-			break
-		} else {
-			fmt.Printf("-> please enter y or n")
-			time.Sleep(1500 * time.Millisecond)
+		// prettify the JSON
+		pretty, err := json.MarshalIndent(config, "", "  ")
+		if err != nil {
+			fmt.Printf("[err] : error while prettifying JSON\n")
+			panic(err)
 		}
-	}
+		prettifiedJSON := string(pretty[:])
 
-	// check if they answered no
-	if areSettingsOkay == "n" {
-		os.Exit(0)
-	}
+		// confirm the preferences
+		var areSettingsOkay string
+		for true {
+			clear()
 
-	// idk what to do after this
-	stringifiedConfig, err := json.Marshal(config)
-	if err != nil {
-		fmt.Printf("[err] : error when stringifying json")
-	}
+			// display the UI
+			fmt.Printf("== maryo -> setup ===========================================\n")
+			fmt.Printf("                                        Steps:               \n")
+			fmt.Printf(" are you okay with the settings below?    intro              \n")
+			fmt.Printf("                                          config creation    \n")
+			fmt.Printf("                                        > confirm prefs      \n")
+			fmt.Printf("                                          generate cert      \n")
+			fmt.Printf("                                          profit???          \n")
+			fmt.Printf("                                                             \n")
+			fmt.Printf(prettifiedJSON)
+			fmt.Printf("\n                                                             \n")
+			fmt.Printf("-> (y|n)                                                     \n")
+			fmt.Printf("=============================================================\n")
+			areSettingsOkay = input(": ")
 
-	// place it into the file
-	if fileMap["config"] == "iv" {
-		deleteFile("config.json")
-		createFile("config.json")
-		writeByteToFile("config.json", stringifiedConfig)
-	} else if fileMap["config"] == "ne" {
-		createFile("config.json")
-		writeByteToFile("config.json", stringifiedConfig)
-	} else if fileMap["config"] == "uk" {
-		// detect status of config and do the
-		// things to write to it.
-		if doesFileExist("config.json") == true {
-			deleteFile("config.json")
-			createFile("config.json")
-			writeByteToFile("config.json", stringifiedConfig)
-		} else {
-			createFile("config.json")
-			writeByteToFile("config.json", stringifiedConfig)
+			if (areSettingsOkay == "y") || (areSettingsOkay == "n") {
+				break
+			} else {
+				fmt.Printf("-> please enter y or n")
+				time.Sleep(1500 * time.Millisecond)
+			}
+		}
+
+		// check if they answered no
+		if areSettingsOkay == "n" {
+			os.Exit(0)
+		}
+
+		// idk what to do after this
+		stringifiedConfig, err := json.Marshal(config)
+		if err != nil {
+			fmt.Printf("[err] : error when stringifying json")
+		}
+
+		// place it into the file
+		if fileMap["config"] == "iv" {
+			deleteFile("maryo/config.json")
+			createFile("maryo/config.json")
+			writeByteToFile("maryo/config.json", stringifiedConfig)
+		} else if fileMap["config"] == "ne" {
+			createFile("maryo/config.json")
+			writeByteToFile("maryo/config.json", stringifiedConfig)
+		} else if fileMap["config"] == "uk" {
+			// detect status of config and do the
+			// things to write to it.
+			if doesFileExist("maryo/config.json") == true {
+				deleteFile("maryo/config.json")
+				createFile("maryo/config.json")
+				writeByteToFile("maryo/config.json", stringifiedConfig)
+			} else {
+				createFile("maryo/config.json")
+				writeByteToFile("maryo/config.json", stringifiedConfig)
+			}
 		}
 	}
 
@@ -432,8 +494,8 @@ func setup(fileMap map[string]string) {
 
 	fmt.Printf("== maryo -> setup ===========================================\n")
 	fmt.Printf("                                        Steps:               \n")
-	fmt.Printf(" congratulations, you are finished        intro              \n")
-	fmt.Printf(" setting up maryo!                        config creation    \n")
+	fmt.Printf(" now, it is time to generate a https      intro              \n")
+	fmt.Printf(" cert to encrypt your data                config creation    \n")
 	fmt.Printf(" -> press enter                           confirm prefs      \n")
 	fmt.Printf("                                        > generate cert      \n")
 	fmt.Printf("                                          profit???          \n")
@@ -441,6 +503,10 @@ func setup(fileMap map[string]string) {
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("=============================================================\n")
+	_ = input("")
+
+	// generate the certificates
+	doCertGen()
 
 	// show them the finished screen
 	clear()

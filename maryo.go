@@ -23,13 +23,32 @@ func main() {
 	consoleSequence(fmt.Sprintf("%s", code("reset")))
 
 	// parse some flags here
-	config := flag.String("config", "config.json", "value for config file path")
+	config := flag.String("config", "maryo/config.json", "value for config file path (default is maryo/config.json)")
 	logging := flag.Bool("logging", false, "if set, the proxy will log all request data (only needed for debugging)")
 	doSetup := flag.Bool("setup", false, "if set, maryo will go through setup again")
+	generateCerts := flag.Bool("regencerts", false, "if set, maryo will generate self-signed certificates for private use")
 	flag.Parse()
 
 	// set window title
 	ttitle("maryo")
+
+	// generate the certs if needed
+	if *generateCerts == true {
+
+		// that's it, really
+		doCertGen()
+
+		// clear the screen
+		clear()
+
+		// give the user a message
+		fmt.Printf("your certificate and key have been generated")
+		fmt.Printf("reload the program to use them.")
+
+		// close the program
+		os.Exit(0)
+
+	}
 
 	if *doSetup == false {
 
@@ -57,6 +76,22 @@ func main() {
 			}
 		}
 
+		// cert.pem and key.pem -- if nonexistent, just do setup
+		fileMap["cert"] = "ne"
+
+		// check the cert
+		if doesFileExist("maryo/cert.pem") != false {
+
+			// check the key
+			if doesFileExist("maryo/key.pem") != false {
+
+				// say it is valid if it is there
+				fileMap["cert"] = "va"
+
+			}
+
+		}
+
 		// do the setup function if the file isn't completely correct
 		if fileMap["config"] == "ne" {
 
@@ -71,6 +106,16 @@ func main() {
 			fmt.Printf(" 1. run this program with the --setup flag\n")
 			fmt.Printf(" 2. delete the config and run this program\n")
 			fmt.Printf(" 3. fix the config\n")
+			os.Exit(1)
+
+		} else if fileMap["cert"] == "ne" {
+
+			// i'm not going to force you to set it up again
+			fmt.Printf("you don't have any certs in the maryo folder\n")
+			fmt.Printf("you have three different options:\n")
+			fmt.Printf(" 1. run this program with the --regencerts flag\n")
+			fmt.Printf(" 2. run this program with the --setup flag")
+			fmt.Printf(" 3. provide your own certs\n")
 			os.Exit(1)
 
 		} else {
