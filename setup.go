@@ -106,7 +106,7 @@ func setup(fileMap map[string]string) {
 			fmt.Printf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][test[x]], testEndpoints["local"][test[x]])
 
 			// get the json
-			res, err := get(strings.Join([]string{testEndpoints["local"][test[x]], "/isthisworking"}, ""))
+			res, err := get(strings.Join([]string{"http://", testEndpoints["local"][test[x]], "/isthisworking"}, ""))
 
 			// prepare a struct for the json
 			var parsedRes isitworkingStruct
@@ -150,7 +150,7 @@ func setup(fileMap map[string]string) {
 			fmt.Printf("  %s %s -> %s", utilIcons["uncertain"], testEndpoints["ninty"][testOfficial[x]], testEndpoints["official"][testOfficial[x]])
 
 			// get the json
-			res2, err3 := get(strings.Join([]string{testEndpoints["official"][testOfficial[x]], "/isthisworking"}, ""))
+			res2, err3 := get(strings.Join([]string{"http://", testEndpoints["official"][testOfficial[x]], "/isthisworking"}, ""))
 			// prepare a struct for the json
 			var parsedRes2 isitworkingStruct
 
