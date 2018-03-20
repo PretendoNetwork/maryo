@@ -142,7 +142,7 @@ func setup(fileMap map[string]string) {
 	}
 
 	// create config var
-	var config map[string]string
+	var config map[string]map[string]string
 
 	// show log when
 	clear()
@@ -321,14 +321,21 @@ func setup(fileMap map[string]string) {
 		}
 
 		// make a map for the config
-		config = make(map[string]string)
+		config = make(map[string]map[string]string)
+
+		// make the endpoints and config a map[string]string
+		config["endpoints"] = make(map[string]string)
+		config["config"] = make(map[string]string)
 
 		// apply a nice helping of all of the working endpoints to the config
 		for x := 0; x < len(cfgTest); x++ {
 			if cfgResult[x] == true {
-				config[testEndpoints["ninty"][cfgTest[x]]] = testEndpoints[using][cfgTest[x]]
+				config["endpoints"][testEndpoints["ninty"][cfgTest[x]]] = testEndpoints[using][cfgTest[x]]
 			}
 		}
+
+		// set some config vars
+		config["config"]["decryptOutgoing"] = "true"
 
 		// wait for them to press enter
 		fmt.Printf("\npress enter to continue...\n")
@@ -342,7 +349,11 @@ func setup(fileMap map[string]string) {
 		numVals := 0
 
 		// config
-		config = make(map[string]string)
+		config = make(map[string]map[string]string)
+
+		// make the endpoints and config a map[string]string
+		config["endpoints"] = make(map[string]string)
+		config["config"] = make(map[string]string)
 
 		// temp vars
 		var inputtedFrom string
@@ -370,12 +381,16 @@ func setup(fileMap map[string]string) {
 			}
 
 			// place them in the config var
-			config[inputtedFrom] = inputtedTo
+			config["endpoints"][inputtedFrom] = inputtedTo
 
 			// update info
 			numVals++
 
 		}
+
+		// set default config vars
+		config["config"]["decryptOutgoing"] = "true"
+
 		// loading a template
 	} else if method == "3" {
 

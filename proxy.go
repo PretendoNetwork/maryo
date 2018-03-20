@@ -36,6 +36,9 @@ func startProxy(configName string, logging bool) {
 	// get the config data
 	config = readJSONFile(configName)
 
+	// check if we decrypt all connections
+	decryptAll := config["config"].(map[string]interface{})["decryptOutgoing"].(string)
+
 	// check if log file exists
 	if doesFileExist("maryo/proxy.log") == false {
 
@@ -61,6 +64,9 @@ func startProxy(configName string, logging bool) {
 	proxy := goproxy.NewProxyHttpServer()
 
 	// set some settings
+
+	// add the ninty cert and key to the proxy for decrypting
+	setCA(nintyCert, nintyKey)
 
 	// verbose mode can be a little... too verbose
 	proxy.Verbose = logging
@@ -104,23 +110,30 @@ func startProxy(configName string, logging bool) {
 
 			// check if it is in it in the first place
 			// also, strip the URL of the port
-			if redirTo, isItIn := config[strings.Split(r.URL.Host, ":")[0]]; isItIn {
+			if redirTo, isItIn := config["endpoints"].(map[string]interface{})[strings.Split(r.URL.Host, ":")[0]].(string); isItIn {
 
-				// if protocol is HTTPS
-				// disabled this during testing
-				/*if r.URL.Scheme == "https" {
+				// check if we decrypt all outgoing connections
+				if decryptAll == "true" {
 
-					// set it to HTTP
-					r.URL.Scheme = "http"
+					// if protocol is HTTPS
+					if r.URL.Scheme == "https" {
 
-				}*/
+						// let the user know
+						fmt.Printf("-> switching protocol to http\n")
+
+						// set it to HTTP
+						r.URL.Scheme = "http"
+
+					}
+
+				}
 
 				// log the redirect
-				consoleSequence(fmt.Sprintf("-> proxying %s%s%s to %s%s%s\n", code("green"), r.URL.Host, code("reset"), code("green"), redirTo.(string), code("reset")))
-				writeFile("maryo/proxy.log", fmt.Sprintf("-> proxying %s to %s", r.URL.Host, redirTo.(string)))
+				consoleSequence(fmt.Sprintf("-> proxying %s%s%s to %s%s%s\n", code("green"), r.URL.Host, code("reset"), code("green"), redirTo, code("reset")))
+				writeFile("maryo/proxy.log", fmt.Sprintf("-> proxying %s to %s", r.URL.Host, redirTo))
 
 				// redirect it
-				r.URL.Host = redirTo.(string)
+				r.URL.Host = redirTo
 
 			}
 
