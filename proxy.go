@@ -89,7 +89,24 @@ func startProxy(configName string, logging bool) {
 			writeFile("maryo/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
 
 			// get prettified request
-			reqData, err := httputil.DumpRequest(r, true)
+			
+			// define these variables so no errors
+			var reqData []byte
+			var err error
+			
+			// no errors for post requests
+			if r.Method == "POST" {
+				
+				// if it is, then tell the dumper it is
+				reqData, err = httputil.DumpRequest(r, true)
+				
+			} else {
+				
+				// otherwise, don't
+				reqData, err = httputil.DumpRequest(r, false)
+				
+			}
+			
 			if err != nil {
 				
 				// output error
@@ -103,14 +120,14 @@ func startProxy(configName string, logging bool) {
 
 				// log the request data, then
 				fmt.Printf("\n-- request data\n")
-				fmt.Printf("%s", string(reqData))
+				fmt.Printf("%s", string(reqData[:]))
 				fmt.Printf("\n\n")
 
 			}
 
 			// always log to file
 			writeFile("maryo/proxy.log", fmt.Sprintf("-> request data to %s\n", r.URL.Host))
-			writeFile("maryo/proxy.log", fmt.Sprintf("%s", string(reqData)))
+			writeFile("maryo/proxy.log", fmt.Sprintf("%s", string(reqData[:])))
 			writeFile("maryo/proxy.log", fmt.Sprintf("\n\n"))
 
 			// attempt to proxy it to the servers listed in config
@@ -165,7 +182,22 @@ func startProxy(configName string, logging bool) {
 				}
 				
 				// dump response
-				fmtResp, err := httputil.DumpResponse(resp, true)
+				
+				// make these variables earlier on so no errors
+				var fmtResp []byte
+				
+				// check if the request is a post request
+				if r.Method == "POST" {
+					
+					// if so, tell the dumper that it is one
+					fmtResp, err = httputil.DumpResponse(resp, true)
+					
+				} else {
+					
+					// otherwise, don't
+					fmtResp, err = httputil.DumpResponse(resp, false)
+					
+				}	
 				
 				// error handling
 				if err != nil {
@@ -181,7 +213,7 @@ func startProxy(configName string, logging bool) {
 					
 					// log it if they do
 					fmt.Printf("\n-- response data\n")
-					fmt.Printf("%s\n", string(fmtResp))
+					fmt.Printf("%s\n", string(fmtResp[:]))
 					fmt.Printf("\n\n")
 					
 				}
