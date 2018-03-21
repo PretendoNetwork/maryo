@@ -65,6 +65,9 @@ func startProxy(configName string, logging bool) {
 
 	// set some settings
 
+	// http client for use when performing POST requests
+	httpClient := &http.Client{}
+
 	// add the ninty cert and key to the proxy for decrypting
 	setCA(nintyCert, nintyKey)
 
@@ -85,7 +88,6 @@ func startProxy(configName string, logging bool) {
 
 			// log the request
 			consoleSequence(fmt.Sprintf("-> request to %s%s%s\n", code("green"), r.URL.Host, code("reset")))
-
 			writeFile("maryo/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
 
 			// get prettified request
@@ -134,6 +136,34 @@ func startProxy(configName string, logging bool) {
 
 				// redirect it
 				r.URL.Host = redirTo
+
+			}
+
+			// here is a fancy workaround for POST requests
+			if r.Method == "POST" {
+
+				// show the user that we performed a POST request
+				fmt.Printf("-> performing %s request to %s%s://%s%s%s\n", r.Method, code("green"), r.URL.Scheme, r.URL.Host, r.URL.Path, code("reset"))
+
+				// clone the request
+				newReq := cloneReq(r)
+
+				// perform the request
+				resp, err := httpClient.Do(newReq)
+
+				// error handling
+				if err != nil {
+					panic(err)
+					// return a response
+					return r, goproxy.NewResponse(newReq, goproxy.ContentTypeText, http.StatusBadGateway, strings.Join([]string{"no worries, this is an error in maryo\n", err.Error()}, ""))
+
+				}
+
+				// close the connection
+				defer resp.Body.Close()
+
+				// return the processed response
+				return newReq, resp
 
 			}
 

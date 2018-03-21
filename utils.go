@@ -12,6 +12,7 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+
 	// internals
 	"crypto/tls"
 	"crypto/x509"
@@ -19,6 +20,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"reflect"
 	"strings"
 	// externals
 	"github.com/elazarl/goproxy"
@@ -123,5 +125,38 @@ func setCA(caCert, caKey []byte) error {
 
 	// then return nil since there were no errors
 	return nil
+
+}
+
+// function for zeroing something
+// takes a pointer (&varible)
+func erase(v interface{}) {
+
+	// get the pointer
+	p := reflect.ValueOf(v).Elem()
+
+	// zero it
+	p.Set(reflect.Zero(p.Type()))
+
+}
+
+// clone a request into a requestable request object
+func cloneReq(request *http.Request) *http.Request {
+
+	// clone the request
+	newReq := &http.Request{
+
+		Method:     request.Method,
+		URL:        request.URL,
+		Proto:      request.Proto,
+		ProtoMajor: request.ProtoMajor,
+		ProtoMinor: request.ProtoMinor,
+		Header:     request.Header,
+		Body:       request.Body,
+		Host:       request.Host,
+	}
+
+	// return the cloned request
+	return newReq
 
 }
