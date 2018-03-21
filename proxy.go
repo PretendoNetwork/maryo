@@ -14,7 +14,6 @@ package main
 
 import (
 	// internals
-
 	"fmt"
 	"log"
 	"net/http"
@@ -230,4 +229,5 @@ func startProxy(configName string, logging bool) {
 
 	// start the proxy
 	log.Fatal(http.ListenAndServe(":9437", proxy))
+	
 }

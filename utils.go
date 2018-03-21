@@ -12,12 +12,10 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
-
 	// internals
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"reflect"
@@ -30,10 +28,19 @@ func getIP() string {
 
 	// dial a connection to another ip
 	conn, err := net.Dial("udp", "8.8.8.8:80")
+	
+	// handle errors
 	if err != nil {
+		
+		// show error message
 		fmt.Printf("[err]: error while connecting to another computer\n")
-		log.Fatal(err)
+		
+		// show traceback
+		panic(err)
+		
 	}
+	
+	// close the connection once dobs
 	defer conn.Close()
 
 	// get the local address
@@ -41,6 +48,7 @@ func getIP() string {
 
 	// return it
 	return localAddr.IP.String()
+	
 }
 
 // setting CA in goproxy

@@ -19,9 +19,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/kabukky/httpscerts"
 	// externals
+	"github.com/kabukky/httpscerts"
 )
 
 // cert generation function here so i don't need to rewrite it in maryo.go
@@ -69,8 +68,13 @@ func doCertGen() {
 
 	// handle the error (if there is one)
 	if err != nil {
+		
+		// show error message
 		fmt.Printf("[err]: error while generating a certificate and key for %s\n", ip)
+		
+		// show traceback
 		panic(err)
+		
 	}
 
 	// then say they were made
@@ -100,6 +104,8 @@ func setup(fileMap map[string]string) {
 
 	// setup environment
 	clear()
+	
+	// set term title
 	ttitle("maryo -> setup")
 
 	// show setup screen
@@ -132,13 +138,24 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" -> (1|2|3|4)                                                \n")
 		fmt.Printf("=============================================================\n")
 		method = input(": ")
-
+		
+		// make sure it is a valid option
 		if (method == "1") || (method == "2") || (method == "3") || (method == "4") {
+		
+			// exit loop if it is
 			break
+			
+		// if it isn't	
 		} else {
+			
+			// show a message showing valid options
 			fmt.Printf("-> please enter 1, 2, 3, or 4\n")
+			
+			// stop the event loop to give them time to read
 			time.Sleep(1500 * time.Millisecond)
+			
 		}
+		
 	}
 
 	// create config var
@@ -152,6 +169,8 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" current config status: %s\n", fileStat[fileMap["config"]])
 	// automatic config making
 	if method == "1" {
+		
+		// show some messages
 		fmt.Printf(" method: automatic..\n")
 		fmt.Printf("-- beginning tests\n")
 		fmt.Printf(" 1. attempting to detect endpoints running on this machine\n")
@@ -171,13 +190,26 @@ func setup(fileMap map[string]string) {
 
 			// parse it
 			err2 := json.Unmarshal([]byte(res), &parsedRes)
+			
+			// make sure it isn't empty
 			if res != "" {
+				
+				// if there is an error in JSON parsing
 				if err2 != nil {
+					
+					// and not an error with the request
 					if err == nil {
+						
+						// show a message
 						fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", test[x])
+						
+						// show a traceback
 						panic(err2)
+						
 					}
+					
 				}
+				
 			}
 
 			// handle the results
@@ -214,13 +246,26 @@ func setup(fileMap map[string]string) {
 
 			// parse it
 			err4 := json.Unmarshal([]byte(res2), &parsedRes2)
+			
+			// make sure the request isn't empty
 			if res2 != "" {
+				
+				// if there is an error in JSON parsing
 				if err4 != nil {
+					
+					// and not an error with the request
 					if err3 == nil {
+						
+						// show an error message
 						fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", testOfficial[x])
+						
+						// and show a traceback
 						panic(err4)
+						
 					}
+					
 				}
+				
 			}
 
 			// handle the results
@@ -242,6 +287,8 @@ func setup(fileMap map[string]string) {
 
 		// print out the results
 		fmt.Printf("-- printing results of tests\n")
+		
+		// for local servers
 		for x := 0; x < len(result); x++ {
 
 			// add a header saying that these are local results
@@ -249,12 +296,20 @@ func setup(fileMap map[string]string) {
 
 			// print the results
 			if result[x] == true {
+				
+				// show a successful message
 				fmt.Printf(" %s: success\n", test[x])
+				
 			} else {
+				
+				// or a failiure message
 				fmt.Printf(" %s: failiure\n", test[x])
+				
 			}
 
 		}
+		
+		// for the official servers
 		for x := 0; x < len(resultOfficial); x++ {
 
 			// add a header saying that these are official results
@@ -262,9 +317,15 @@ func setup(fileMap map[string]string) {
 
 			// print the results
 			if resultOfficial[x] == true {
+				
+				// if successful
 				fmt.Printf(" %s: success\n", testOfficial[x])
+				
 			} else {
+				
+				// or failed
 				fmt.Printf(" %s: failiure\n", testOfficial[x])
+				
 			}
 
 		}
@@ -282,17 +343,28 @@ func setup(fileMap map[string]string) {
 
 		// scan the local server result list to see if any are true, since they have priority
 		useLocal = false
+		
+		// scan it
 		for x := 0; x < len(result); x++ {
+			
+			// if it works, use local servers
 			if result[x] == true {
+				
+				// set the variable
 				useLocal = true
+				
 			}
+			
 		}
 
 		// local servers have priority
 		if useLocal == true {
+			
+			// set the needed variables
 			using = "local"
 			cfgTest = test
 			cfgResult = result
+			
 		} else {
 
 			// check this first to see if official even works
@@ -302,7 +374,8 @@ func setup(fileMap map[string]string) {
 					doesOfficialHaveAnyWorkingEndpoints = true
 				}
 			}
-
+			
+			// if the official servers work
 			if doesOfficialHaveAnyWorkingEndpoints == true {
 
 				// set these if it does
@@ -318,6 +391,7 @@ func setup(fileMap map[string]string) {
 				os.Exit(0)
 
 			}
+			
 		}
 
 		// make a map for the config
@@ -329,9 +403,15 @@ func setup(fileMap map[string]string) {
 
 		// apply a nice helping of all of the working endpoints to the config
 		for x := 0; x < len(cfgTest); x++ {
+			
+			// if this endpoint works
 			if cfgResult[x] == true {
+				
+				// set it in the config
 				config["endpoints"][testEndpoints["ninty"][cfgTest[x]]] = testEndpoints[using][cfgTest[x]]
+				
 			}
+			
 		}
 
 		// set some config vars
@@ -343,6 +423,8 @@ func setup(fileMap map[string]string) {
 
 		// creating a custom config
 	} else if method == "2" {
+		
+		// show a little message
 		fmt.Printf(" method: custom..\n")
 
 		// number of values in the config
@@ -358,7 +440,8 @@ func setup(fileMap map[string]string) {
 		// temp vars
 		var inputtedFrom string
 		var inputtedTo string
-
+	
+		// a infinite loop for custom configs
 		for true {
 			clear()
 
@@ -372,12 +455,24 @@ func setup(fileMap map[string]string) {
 
 			// ask for conf vals
 			inputtedFrom = input("from: ")
+			
+			// if the from field is empty
 			if inputtedFrom == "" {
+				
+				// exit the loop
 				break
+				
 			}
+			
+			// ask for the to value
 			inputtedTo = input("to: ")
+			
+			// if the field is empty
 			if inputtedTo == "" {
+				
+				// exit the loop
 				break
+				
 			}
 
 			// place them in the config var
@@ -400,6 +495,8 @@ func setup(fileMap map[string]string) {
 		// ask for choice
 		fmt.Printf(" method: template..\n")
 		for true {
+			
+			// clear screen
 			clear()
 
 			// show ui
@@ -416,18 +513,34 @@ func setup(fileMap map[string]string) {
 
 			// break if it's a valid option
 			if (tmpl == "1") || (tmpl == "2") {
+				
+				// break
 				break
+				
 			} else {
+				
+				// otherwise show a help message
 				fmt.Printf("-> please enter 1 or 2\n")
+				
+				// sleep to let them read it
 				time.Sleep(1500 * time.Millisecond)
+				
 			}
+			
 		}
 
 		// load the selected template into the config var
+		// TODO: add variable templates
 		if tmpl == "1" {
+			
+			// load the template
 			config = localConf
+			
 		} else if tmpl == "2" {
+			
+			// load this other template
 			config = pretendoConf
+			
 		}
 
 	}
@@ -437,15 +550,28 @@ func setup(fileMap map[string]string) {
 
 		// prettify the JSON
 		pretty, err := json.MarshalIndent(config, "", "  ")
+		
+		// error handling
 		if err != nil {
+			
+			// show an error message
 			fmt.Printf("[err] : error while prettifying JSON\n")
+			
+			// show traceback
 			panic(err)
+			
 		}
+		
+		// turn it into a string
 		prettifiedJSON := string(pretty[:])
 
 		// confirm the preferences
 		var areSettingsOkay string
+		
+		// for loop for confirming
 		for true {
+			
+			// clear screen for cleanliness
 			clear()
 
 			// display the UI
@@ -462,24 +588,48 @@ func setup(fileMap map[string]string) {
 			fmt.Printf("-> (y|n)                                                     \n")
 			fmt.Printf("=============================================================\n")
 			areSettingsOkay = input(": ")
-
+		
+			// check if response is okay
 			if (areSettingsOkay == "y") || (areSettingsOkay == "n") {
+				
+				// exit loop if valid
 				break
+				
 			} else {
+				
+				// show a help message
 				fmt.Printf("-> please enter y or n")
+				
+				// let them read it
 				time.Sleep(1500 * time.Millisecond)
+				
 			}
+			
 		}
 
 		// check if they answered no
 		if areSettingsOkay == "n" {
+			
+			// if so, clear
+			clear()
+			
+			// and quit program
 			os.Exit(0)
+			
 		}
 
-		// idk what to do after this
+		// convert golang map to json
 		stringifiedConfig, err := json.Marshal(config)
+		
+		// error handling
 		if err != nil {
+			
+			// show error message
 			fmt.Printf("[err] : error when stringifying json")
+			
+			// show traceback
+			panic(err)
+			
 		}
 		
 		// make sure the maryo folder exists
@@ -492,24 +642,51 @@ func setup(fileMap map[string]string) {
 		
 		// place it into the file
 		if fileMap["config"] == "iv" {
+			
+			// delete the existing config
 			deleteFile("maryo/config.json")
+			
+			// create a new one
 			createFile("maryo/config.json")
+			
+			// write the data to the file
 			writeByteToFile("maryo/config.json", stringifiedConfig)
+			
 		} else if fileMap["config"] == "ne" {
+			
+			// create the config
 			createFile("maryo/config.json")
+			
+			// write the config to the file
 			writeByteToFile("maryo/config.json", stringifiedConfig)
+			
 		} else if fileMap["config"] == "uk" {
+			
 			// detect status of config and do the
 			// things to write to it.
 			if doesFileExist("maryo/config.json") == true {
+				
+				// delete existing config
 				deleteFile("maryo/config.json")
+				
+				// create a new one
 				createFile("maryo/config.json")
+				
+				// write the config to it
 				writeByteToFile("maryo/config.json", stringifiedConfig)
+				
 			} else {
+				
+				// create the config
 				createFile("maryo/config.json")
+				
+				// write the config to the file
 				writeByteToFile("maryo/config.json", stringifiedConfig)
+				
 			}
+			
 		}
+		
 	}
 
 	// generate a https cert

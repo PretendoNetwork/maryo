@@ -45,8 +45,13 @@ func clear() {
 
 		// handle errors correctly
 		if err != nil {
+			
+			// show a message
 			fmt.Printf("[err] : error while executing cls. (report this issue)\n")
+		
+			// show traceback
 			panic(err)
+			
 		}
 
 	} else {
@@ -56,6 +61,7 @@ func clear() {
 		fmt.Printf("\033[2J\033[;H")
 
 	}
+	
 }
 
 // trick Terminal.app to respect ANSI color codes
@@ -71,8 +77,13 @@ func ansiTrick() {
 
 	// handle errors correctly
 	if err != nil {
+		
+		// show an error message
 		fmt.Printf("[err] : error while executing export. (isn't that a shell builtin?)\n")
+		
+		// show a traceback
 		panic(err)
+		
 	}
 
 }
@@ -118,7 +129,10 @@ func padStrToMatchStr(pad string, match string, padWith string) string {
 
 	// pad the string to match the length of the other
 	for x := 0; x < length(match); x++ {
+		
+		// pad the string with the character
 		pad += padWith
+		
 	}
 
 	// return the padded string
@@ -226,4 +240,5 @@ func consoleSequence(message string) {
 		fmt.Printf(message)
 
 	}
+	
 }

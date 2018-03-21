@@ -12,6 +12,7 @@ if you want a copy, go to http://www.gnu.org/licenses/
 package main
 
 import (
+	// internals
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
