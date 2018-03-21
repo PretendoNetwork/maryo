@@ -39,6 +39,21 @@ func makeDirectory(directory string) {
 
 }
 
+func doesDirExist(dir string) bool {
+	
+	// check if directory exists
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		
+		// if it doesn't
+		return false
+		
+	}
+	
+	// if it does
+	return true
+	
+}
+
 // check if file exists
 func doesFileExist(file string) bool {
 

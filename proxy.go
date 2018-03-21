@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"net/http/httputil"
 	// externals
 	"github.com/elazarl/goproxy"
 )
@@ -76,9 +77,6 @@ func startProxy(configName string, logging bool) {
 
 	// set up the proxy
 
-	// this needs to be set for request data
-	var reqData string
-
 	// make it always MITM
 	proxy.OnRequest().HandleConnect(goproxy.AlwaysMitm)
 
@@ -91,21 +89,28 @@ func startProxy(configName string, logging bool) {
 			writeFile("maryo/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
 
 			// get prettified request
-			reqData = formatRequest(r)
-
+			reqData, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				
+				// output error
+				fmt.Printf("[err]: error occurred while dumping http request\n")
+				fmt.Printf("%s\n", err.Error())
+	
+			}
+			
 			// if it is said to be verbose with logging, print request data
 			if logging == true {
 
 				// log the request data, then
 				fmt.Printf("\n-- request data\n")
-				fmt.Printf("%s", reqData)
+				fmt.Printf("%s", string(reqData))
 				fmt.Printf("\n\n")
 
 			}
 
 			// always log to file
 			writeFile("maryo/proxy.log", fmt.Sprintf("-> request data to %s\n", r.URL.Host))
-			writeFile("maryo/proxy.log", fmt.Sprintf("%s", reqData))
+			writeFile("maryo/proxy.log", fmt.Sprintf("%s", string(reqData)))
 			writeFile("maryo/proxy.log", fmt.Sprintf("\n\n"))
 
 			// attempt to proxy it to the servers listed in config
@@ -153,17 +158,36 @@ func startProxy(configName string, logging bool) {
 
 				// error handling
 				if err != nil {
-					panic(err)
+					
 					// return a response
 					return r, goproxy.NewResponse(newReq, goproxy.ContentTypeText, http.StatusBadGateway, strings.Join([]string{"no worries, this is an error in maryo\n", err.Error()}, ""))
 
 				}
-
-				// close the connection
-				defer resp.Body.Close()
-
+				
+				// dump response
+				fmtResp, err := httputil.DumpResponse(resp, true)
+				
+				// error handling
+				if err != nil {
+					
+					// log the error
+					fmt.Printf("[err]: error while dumping response")
+					fmt.Printf("%s\n", err.Error())
+					
+				}
+				
+				// make sure the user wants to log response data
+				if logging == true {
+					
+					// log it if they do
+					fmt.Printf("\n-- response data\n")
+					fmt.Printf("%s\n", string(fmtResp))
+					fmt.Printf("\n\n")
+					
+				}
+				
 				// return the processed response
-				return newReq, resp
+				return r, resp
 
 			}
 

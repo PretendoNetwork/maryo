@@ -39,11 +39,11 @@ func doCertGen() {
 	// create necissary directories for this
 
 	// maryo folder
-	if doesFileExist("maryo/") == false {
+	if doesDirExist("maryo") == false {
 
 		// make it
 		makeDirectory("maryo")
-
+	
 	}
 
 	// clean the cert and key if they exist
@@ -481,7 +481,15 @@ func setup(fileMap map[string]string) {
 		if err != nil {
 			fmt.Printf("[err] : error when stringifying json")
 		}
+		
+		// make sure the maryo folder exists
+		if doesDirExist("maryo") == false {
 
+			// make it if it doesn't
+			makeDirectory("maryo")
+		
+		}
+		
 		// place it into the file
 		if fileMap["config"] == "iv" {
 			deleteFile("maryo/config.json")
