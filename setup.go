@@ -38,33 +38,33 @@ func doCertGen() {
 	// create necissary directories for this
 
 	// maryo folder
-	if doesDirExist("maryo") == false {
+	if doesDirExist("maryo-data") == false {
 
 		// make it
-		makeDirectory("maryo")
+		makeDirectory("maryo-data")
 	
 	}
 
 	// clean the cert and key if they exist
 
 	// cert.pem
-	if doesFileExist("maryo/cert.pem") == true {
+	if doesFileExist("maryo-data/cert.pem") == true {
 
 		// delete the cert
-		deleteFile("maryo/cert.pem")
+		deleteFile("maryo-data/cert.pem")
 
 	}
 
 	// key.pem
-	if doesFileExist("maryo/key.pem") == true {
+	if doesFileExist("maryo-data/key.pem") == true {
 
 		// delete the key
-		deleteFile("maryo/key.pem")
+		deleteFile("maryo-data/key.pem")
 
 	}
 
 	// generate the needed cert and key
-	err := httpscerts.Generate("maryo/cert.pem", "maryo/key.pem", fmt.Sprintf("%s:9437", ip))
+	err := httpscerts.Generate("maryo-data/cert.pem", "maryo-data/key.pem", fmt.Sprintf("%s:9437", ip))
 
 	// handle the error (if there is one)
 	if err != nil {
@@ -633,10 +633,10 @@ func setup(fileMap map[string]string) {
 		}
 		
 		// make sure the maryo folder exists
-		if doesDirExist("maryo") == false {
+		if doesDirExist("maryo-data") == false {
 
 			// make it if it doesn't
-			makeDirectory("maryo")
+			makeDirectory("maryo-data")
 		
 		}
 		
@@ -644,44 +644,44 @@ func setup(fileMap map[string]string) {
 		if fileMap["config"] == "iv" {
 			
 			// delete the existing config
-			deleteFile("maryo/config.json")
+			deleteFile("maryo-data/config.json")
 			
 			// create a new one
-			createFile("maryo/config.json")
+			createFile("maryo-data/config.json")
 			
 			// write the data to the file
-			writeByteToFile("maryo/config.json", stringifiedConfig)
+			writeByteToFile("maryo-data/config.json", stringifiedConfig)
 			
 		} else if fileMap["config"] == "ne" {
 			
 			// create the config
-			createFile("maryo/config.json")
+			createFile("maryo-data/config.json")
 			
 			// write the config to the file
-			writeByteToFile("maryo/config.json", stringifiedConfig)
+			writeByteToFile("maryo-data/config.json", stringifiedConfig)
 			
 		} else if fileMap["config"] == "uk" {
 			
 			// detect status of config and do the
 			// things to write to it.
-			if doesFileExist("maryo/config.json") == true {
+			if doesFileExist("maryo-data/config.json") == true {
 				
 				// delete existing config
-				deleteFile("maryo/config.json")
+				deleteFile("maryo-data/config.json")
 				
 				// create a new one
-				createFile("maryo/config.json")
+				createFile("maryo-data/config.json")
 				
 				// write the config to it
-				writeByteToFile("maryo/config.json", stringifiedConfig)
+				writeByteToFile("maryo-data/config.json", stringifiedConfig)
 				
 			} else {
 				
 				// create the config
-				createFile("maryo/config.json")
+				createFile("maryo-data/config.json")
 				
 				// write the config to the file
-				writeByteToFile("maryo/config.json", stringifiedConfig)
+				writeByteToFile("maryo-data/config.json", stringifiedConfig)
 				
 			}
 			

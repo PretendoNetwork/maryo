@@ -23,7 +23,7 @@ func main() {
 	consoleSequence(fmt.Sprintf("%s", code("reset")))
 
 	// parse some flags here
-	config := flag.String("config", "maryo/config.json", "value for config file path (default is maryo/config.json)")
+	config := flag.String("config", "maryo-data/config.json", "value for config file path (default is maryo/config.json)")
 	logging := flag.Bool("logging", false, "if set, the proxy will log all request data (only needed for debugging)")
 	doSetup := flag.Bool("setup", false, "if set, maryo will go through setup again")
 	generateCerts := flag.Bool("regencerts", false, "if set, maryo will generate self-signed certificates for private use")
@@ -87,10 +87,10 @@ func main() {
 		fileMap["cert"] = "ne"
 
 		// check the cert
-		if doesFileExist("maryo/cert.pem") != false {
+		if doesFileExist("maryo-data/cert.pem") != false {
 
 			// check the key
-			if doesFileExist("maryo/key.pem") != false {
+			if doesFileExist("maryo-data/key.pem") != false {
 
 				// say it is valid if it is there
 				fileMap["cert"] = "va"
@@ -120,7 +120,7 @@ func main() {
 		} else if fileMap["cert"] == "ne" {
 
 			// i'm not going to force you to set it up again
-			fmt.Printf("you don't have any certs in the maryo folder\n")
+			fmt.Printf("you don't have any certs in the maryo-data folder\n")
 			fmt.Printf("you have three different options:\n")
 			fmt.Printf(" 1. run this program with the --regencerts flag\n")
 			fmt.Printf(" 2. run this program with the --setup flag")

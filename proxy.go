@@ -5,7 +5,7 @@ maryo/proxy.go
 the proxy that makes this program a reverse proxy
 made by that magical 3ds person
 
-written by Superwhiskers, licensed under gnu gplv3.
+written by superwhiskers, licensed under gnu gplv3.
 if you want a copy, go to http://www.gnu.org/licenses/
 
 */
@@ -40,16 +40,16 @@ func startProxy(configName string, logging bool) {
 	decryptAll := config["config"].(map[string]interface{})["decryptOutgoing"].(string)
 
 	// check if log file exists
-	if doesFileExist("maryo/proxy.log") == false {
+	if doesFileExist("maryo-data/proxy.log") == false {
 
 		// make it then
-		createFile("maryo/proxy.log")
+		createFile("maryo-data/proxy.log")
 
 	}
 
 	// write current timestamp to log
 	t := time.Now().Format("20060102150405")
-	writeFile("maryo/proxy.log", fmt.Sprintf("-> started log [%s]\n", t))
+	writeFile("maryo-data/proxy.log", fmt.Sprintf("-> started log [%s]\n", t))
 
 	// get ip
 	ip := getIP()
@@ -58,7 +58,7 @@ func startProxy(configName string, logging bool) {
 	fmt.Printf("-- proxy log --\n")
 	consoleSequence(fmt.Sprintf("-> local IP address is %s%s%s\n", code("green"), ip, code("reset")))
 	consoleSequence(fmt.Sprintf("-> hosting proxy on %s:9437%s\n", code("green"), code("reset")))
-	writeFile("maryo/proxy.log", fmt.Sprintf("-> got local ip as %s, hosting on port :9437", ip))
+	writeFile("maryo-data/proxy.log", fmt.Sprintf("-> got local ip as %s, hosting on port :9437", ip))
 
 	// load that proxy
 	proxy := goproxy.NewProxyHttpServer()
@@ -85,7 +85,7 @@ func startProxy(configName string, logging bool) {
 
 			// log the request
 			consoleSequence(fmt.Sprintf("-> request to %s%s%s\n", code("green"), r.URL.Host, code("reset")))
-			writeFile("maryo/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
+			writeFile("maryo-data/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
 
 			// get prettified request
 			
@@ -125,9 +125,9 @@ func startProxy(configName string, logging bool) {
 			}
 
 			// always log to file
-			writeFile("maryo/proxy.log", fmt.Sprintf("-> request data to %s\n", r.URL.Host))
-			writeFile("maryo/proxy.log", fmt.Sprintf("%s", string(reqData[:])))
-			writeFile("maryo/proxy.log", fmt.Sprintf("\n\n"))
+			writeFile("maryo-data/proxy.log", fmt.Sprintf("-> request data to %s\n", r.URL.Host))
+			writeFile("maryo-data/proxy.log", fmt.Sprintf("%s", string(reqData[:])))
+			writeFile("maryo-data/proxy.log", fmt.Sprintf("\n\n"))
 
 			// attempt to proxy it to the servers listed in config
 
@@ -153,7 +153,7 @@ func startProxy(configName string, logging bool) {
 
 				// log the redirect
 				consoleSequence(fmt.Sprintf("-> proxying %s%s%s to %s%s%s\n", code("green"), r.URL.Host, code("reset"), code("green"), redirTo, code("reset")))
-				writeFile("maryo/proxy.log", fmt.Sprintf("-> proxying %s to %s", r.URL.Host, redirTo))
+				writeFile("maryo-data/proxy.log", fmt.Sprintf("-> proxying %s to %s", r.URL.Host, redirTo))
 
 				// redirect it
 				r.URL.Host = redirTo
