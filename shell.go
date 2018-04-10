@@ -1,10 +1,10 @@
 /*
 
-maryo/shell.go
+juxtaposition/shell.go
 
-a small collection of terminal utilities
+shell interaction
 
-written by Superwhiskers, licensed under gnu gplv3.
+written by superwhiskers, licensed under gnu agpl.
 if you want a copy, go to http://www.gnu.org/licenses/
 
 */
@@ -181,7 +181,7 @@ func code(index string) string {
 	if runtime.GOOS == "darwin" { ansiTrick(); }
 
 	// fix prefix for windows
-	if isWindows() {
+	if runtime.GOOS == "windows" {
 
 		// prefix that the terminal
 		// color lib uses
@@ -224,7 +224,7 @@ func consoleSequence(message string) {
 
 	// things are different for windows
 	// *shrug*
-	if isWindows() {
+	if runtime.GOOS == "windows" {
 
 		// make that writer
 		Writer := ansicolor.NewAnsiColorWriter(os.Stdout)
