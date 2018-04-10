@@ -49,7 +49,7 @@ func main() {
 		os.Exit(0)
 
 	}
-	
+
 	// if not forced to do setup
 	if *doSetup == false {
 
@@ -60,10 +60,10 @@ func main() {
 		fileMap := make(map[string]string)
 
 		// config.json -- if nonexistent, it follows the user's instruction to create one, or use a builtin copy
-		
+
 		// set it to nonexistent beforehand
 		fileMap["config"] = "ne"
-		
+
 		// check if config exists
 		if doesFileExist(*config) != false {
 
@@ -72,15 +72,15 @@ func main() {
 
 				// set fileMap to have the correct status for the file
 				fileMap["config"] = "iv"
-				
-			// if it isn't	
+
+			// if it isn't
 			} else {
 
 				// "ditto"
 				fileMap["config"] = "va"
 
 			}
-			
+
 		}
 
 		// cert.pem and key.pem -- if nonexistent, just do setup
@@ -104,8 +104,8 @@ func main() {
 
 			// perform setup
 			setup(fileMap)
-		
-		// if it's invalid	
+
+		// if it's invalid
 		} else if fileMap["config"] == "iv" {
 
 			// i'm not just going to perform autosetup because they might have some stuff in there
@@ -115,7 +115,7 @@ func main() {
 			fmt.Printf(" 2. delete the config and run this program\n")
 			fmt.Printf(" 3. fix the config\n")
 			os.Exit(1)
-		
+
 		// if the certificates don't exist
 		} else if fileMap["cert"] == "ne" {
 
@@ -127,14 +127,14 @@ func main() {
 			fmt.Printf(" 3. provide your own certs\n")
 			os.Exit(1)
 
-		// otherwise, start the proxy	
+		// otherwise, start the proxy
 		} else {
 
 			// start the proxy
 			startProxy(*config, *logging)
 
 		}
-		
+
 		// run setup function
 	} else {
 
@@ -149,5 +149,5 @@ func main() {
 		setup(fileMap)
 
 	}
-	
+
 }
