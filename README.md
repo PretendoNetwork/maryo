@@ -8,17 +8,20 @@ maryo is a proxy program intended to be as easy as possible to use, the user int
 ## instructions
 
 ### using precompiled binaries
+
 go to the releases, and download the correct binary for your system. just double-click it and follow the instructions (*it's that easy!*)
 
 ### building from source ~~(WARNING: EXTREMELY HARDCORE)~~
+
 #### prerequisites
+
 - [golang](https://golang.org/)
 - [goproxy](https://github.com/elazarl/goproxy)
 - [ansicolor](https://github.com/shiena/ansicolor)
 - [httpscerts](https://github.com/kabukky/httpscerts)
-- [go-asyncserver (not required yet, but may be soon)](https://github.com/hectane/go-asyncserver)
 
 #### building
+
 1. clone this repository
 2. it's easy, just `go build` in the source directory
 3. you can then double click your own binaries instead of ours (i don't care)
