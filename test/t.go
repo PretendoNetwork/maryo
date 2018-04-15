@@ -49,7 +49,7 @@ func printTitle() {
 	fmt.Printf("                                                  __/ |       \n")
 	fmt.Printf("                                                 |___/        \n")
 	fmt.Fprintf(colorizer, "%s╔════════════════════════════════════════════════════════════════════════════════════════╗\n", "\x1b[91m")
-	fmt.Fprintf(colorizer, "%s‖                                  %sPretendo %sServer Satus                                 %s‖\n", "\x1b[91m", "\x1b[35m", "\x1b[96m", "\x1b[91m")
+	fmt.Fprintf(colorizer, "%s‖                                  %sPretendo %sServer Status                                 %s‖\n", "\x1b[91m", "\x1b[35m", "\x1b[96m", "\x1b[91m")
 	fmt.Fprintf(colorizer, "%s‖                                                                                        ‖\n", "\x1b[91m")
 	fmt.Fprintf(colorizer, "%s‖  %saccount.pretendo.cc %s- %sOnline √                                                        %s‖\n", "\x1b[91m", "\x1b[35m", "\x1b[37m", "\x1b[32m", "\x1b[91m")
 	fmt.Fprintf(colorizer, "%s‖  %sendpoint1.pretendo.cc %s- %sOffline ×                                                     %s‖\n", "\x1b[91m", "\x1b[35m", "\x1b[37m", "\x1b[91m", "\x1b[91m")
