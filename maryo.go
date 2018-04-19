@@ -42,8 +42,8 @@ func main() {
 		clear()
 
 		// give the user a message
-		fmt.Printf("your certificate and key have been generated")
-		fmt.Printf("reload the program to use them.")
+		fmt.Printf("your certificate and key have been generated\n")
+		fmt.Printf("reload the program to use them.\n")
 
 		// close the program
 		os.Exit(0)
@@ -123,7 +123,7 @@ func main() {
 			fmt.Printf("you don't have any certs in the maryo-data folder\n")
 			fmt.Printf("you have three different options:\n")
 			fmt.Printf(" 1. run this program with the --regencerts flag\n")
-			fmt.Printf(" 2. run this program with the --setup flag")
+			fmt.Printf(" 2. run this program with the --setup flag\n")
 			fmt.Printf(" 3. provide your own certs\n")
 			os.Exit(1)
 
