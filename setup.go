@@ -19,21 +19,25 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	// externals
-	"github.com/kabukky/httpscerts"
+	"math/big"
+	"crypto/x509"
+	"crypto/x509/pkix"
+    "io/ioutil"
+	"crypto/rsa"
+	"crypto/rand"
+	"crypto/aes"                                                                                                                                                                                          
+    "crypto/cipher"
 )
 
 // cert generation function here so i don't need to rewrite it in maryo.go
+// (adapted from https://www.socketloop.com/tutorials/golang-create-x509-certificate-private-and-public-keys)
 func doCertGen() {
 
 	// clear the screen because why not?
 	clear()
 
-	// get the ip address for the cert
-	ip := getIP()
-
 	// show a neat info snippet
-	fmt.Printf("- generating certificate and key for %s\n", ip)
+	fmt.Printf("- generating certificate and key pair...\n")
 
 	// create necissary directories for this
 
@@ -63,24 +67,166 @@ func doCertGen() {
 
 	}
 
-	// generate the needed cert and key
-	err := httpscerts.Generate("maryo-data/cert.pem", "maryo-data/key.pem", fmt.Sprintf("%s:9437", ip))
-
-	// handle the error (if there is one)
-	if err != nil {
+	// populate certificate with data
+    template := &x509.Certificate {
 		
-		// show error message
-		fmt.Printf("[err]: error while generating a certificate and key for %s\n", ip)
+		IsCA: true,
+		BasicConstraintsValid: true,
+		SubjectKeyId: []byte{ 1, 2, 3 },
+		SerialNumber: big.NewInt(1234),
+		Subject: pkix.Name{
+			
+			Country: []string{ "somewhere" },
+			Organization: []string{ "private use only" },
 		
-		// show traceback
-		panic(err)
-		
+		},
+		NotBefore: time.Now(),
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage: x509.KeyUsageDigitalSignature|x509.KeyUsageCertSign,
+	
 	}
 
-	// then say they were made
+	// generate private key
+	privatekey, err := rsa.GenerateKey(rand.Reader, 2048)
+
+	// check for errors
+	if err != nil {
+
+		// display error
+		fmt.Printf("[err]: error while generating key pair...\n")
+		
+		// panic
+		panic(err)
+
+	}
+
+	// get the public key
+	publickey := &privatekey.PublicKey
+
+	// create a self-signed certificate. template = parent
+	var parent = template
+	cert, err := x509.CreateCertificate(rand.Reader, template, parent, publickey,privatekey)
+
+	// check for errors
+	if err != nil {
+		
+		// display error
+		fmt.Printf("[err]: error while generating certificate...\n")
+	
+		// panic
+		panic(err)
+	
+	}
+
+	// save private key
+	pkey := x509.MarshalPKCS1PrivateKey(privatekey)
+	ioutil.WriteFile("maryo-data/private-key.pem", pkey, 0777)
+	fmt.Printf("private key saved...\n")
+
+	// save public key
+	pubkey, _ := x509.MarshalPKIXPublicKey(publickey)
+	ioutil.WriteFile("maryo-data/public-key.pem", pubkey, 0777)
+	fmt.Printf("public key saved...\n")
+
+	// save cert
+	ioutil.WriteFile("maryo-data/cert.pem", cert, 0777)
+	fmt.Printf("certificate saved...")
+
+	// then, say they were made
 	fmt.Printf("  finished\n")
 	fmt.Printf("\npress enter to continue...\n")
 	_ = input("")
+
+}
+
+func generateRomFSPatch(encryptionKeyPath string) {
+
+	// clear the screen
+	clear()
+
+	// check for the data directory, the certificates,
+	// and the keys
+
+	// alert about it
+	fmt.Printf("checking for files...\n")
+
+	// directory checking
+	if !doesDirExist("maryo-data") {
+
+		// warn the user
+		fmt.Printf("[err]: the maryo-data directory does not exist...\n")
+		fmt.Printf("       please generate it by going through setup again\n")
+		fmt.Printf("       or by passing the regencerts flag when running maryo.\n")
+
+		// exit
+		os.Exit(1)
+
+	}
+
+	// check the files exist
+	filesInDataDir := []bool {
+		
+		doesFileExist("maryo-data/private-key.pem"),
+		doesFileExist("maryo-data/public-key.pem"),
+		doesFileExist("maryo-data/cert.pem"),
+
+	}
+
+	// check if any are false
+	for _, fileStatus := range filesInDataDir {
+
+		// check if that file exists
+        if fileStatus == false {
+
+			// if it doesn't, then exit
+			fmt.Printf("[err]: one of the required files in the maryo-data\n")
+			fmt.Printf("       directory is nonexistent. please regenerate it\n")
+			fmt.Printf("       by going through setup again or passing the regencerts\n")
+			fmt.Printf("       flag when running maryo again...\n")
+
+			// exit
+			os.Exit(1)
+		
+		}
+		
+	}
+
+	// check for the aes key required for the
+	// console to accept the cert and pubkey
+	if !doesFileExist("maryo-data/0x0D.key") {
+
+		// if it doesn't
+		fmt.Printf("[err]: slot key 0x0D not found in maryo-data...\n")
+		fmt.Printf("       please dm me for my magnet link, torrent it,\n")
+		fmt.Printf("       and place it in the maryo-data directory as 0x0D.key...\n")
+
+		// exit
+		os.Exit(1)
+
+	}
+	
+	// now, we can begin generating the patch
+
+	// alert
+	fmt.Printf("generating patch...")
+
+	// create directory for the patch
+	
+	// but check for it first
+	if doesDirExist("patch-out") {
+
+		// remove it if it already does
+		deleteFile("patch-out")
+
+	}
+
+	// then create it
+	makeDirectory("patch-out")
+
+	// and then proceed to make the
+	// require subdirectories
+	
+	// ~~to be continued~~
 
 }
 
