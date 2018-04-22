@@ -36,13 +36,13 @@ func main() {
 	if *generateCerts == true {
 
 		// that's it, really
-		doCertGen()
+		doCertGen(*config)
 
 		// clear the screen
 		clear()
 
 		// give the user a message
-		fmt.Printf("your certificate and key have been generated\n")
+		fmt.Printf("your certificate and key pair have been generated\n")
 		fmt.Printf("reload the program to use them.\n")
 
 		// close the program
@@ -73,7 +73,7 @@ func main() {
 				// set fileMap to have the correct status for the file
 				fileMap["config"] = "iv"
 
-			// if it isn't
+			// if it is valid
 			} else {
 
 				// "ditto"

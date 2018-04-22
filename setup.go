@@ -25,13 +25,13 @@ import (
     "io/ioutil"
 	"crypto/rsa"
 	"crypto/rand"
-	"crypto/aes"                                                                                                                                                                                          
-    "crypto/cipher"
+	//"crypto/aes"                                                                                                                                                                                          
+    //"crypto/cipher"
 )
 
 // cert generation function here so i don't need to rewrite it in maryo.go
 // (adapted from https://www.socketloop.com/tutorials/golang-create-x509-certificate-private-and-public-keys)
-func doCertGen() {
+func doCertGen(config string) {
 
 	// clear the screen because why not?
 	clear()
@@ -49,21 +49,29 @@ func doCertGen() {
 	
 	}
 
-	// clean the cert and key if they exist
+	// clean the cert and key pair if they exist
 
 	// cert.pem
-	if doesFileExist("maryo-data/cert.pem") == true {
+	if doesFileExist("maryo-data/cert.pem") {
 
 		// delete the cert
 		deleteFile("maryo-data/cert.pem")
 
 	}
 
-	// key.pem
-	if doesFileExist("maryo-data/key.pem") == true {
+	// private-key.pem
+	if doesFileExist("maryo-data/private-key.pem") {
 
-		// delete the key
-		deleteFile("maryo-data/key.pem")
+		// delete the private key
+		deleteFile("maryo-data/private-key.pem")
+
+	}
+
+	// public-key.pem
+	if doesFileExist("maryo-data/public-key.pem") {
+
+		// delete the pubkey
+		deleteFile("maryo-data/public-key.pem")
 
 	}
 
@@ -105,7 +113,7 @@ func doCertGen() {
 
 	// create a self-signed certificate. template = parent
 	var parent = template
-	cert, err := x509.CreateCertificate(rand.Reader, template, parent, publickey,privatekey)
+	cert, err := x509.CreateCertificate(rand.Reader, template, parent, publickey, privatekey)
 
 	// check for errors
 	if err != nil {
@@ -130,11 +138,99 @@ func doCertGen() {
 
 	// save cert
 	ioutil.WriteFile("maryo-data/cert.pem", cert, 0777)
-	fmt.Printf("certificate saved...")
+	fmt.Printf("certificate saved...\n")
 
 	// then, say they were made
-	fmt.Printf("  finished\n")
+	fmt.Printf("finished generating the cert and key pair...\n")
 	fmt.Printf("\npress enter to continue...\n")
+	_ = input("")
+
+	// then ask if they would like to enable https
+	// on the server
+	var enableHTTPS string
+	for true {
+
+		// clear the screen
+		clear()
+
+		// display the message
+		fmt.Printf("would you like to enable https on the server?\n")
+		fmt.Printf("-> (y|n)\n")
+		enableHTTPS = input(": ")
+		
+		// make sure it is a valid option
+		if (enableHTTPS == "y") || (enableHTTPS == "n") {
+		
+			// exit loop if it is
+			break
+			
+		// if it isn't	
+		} else {
+			
+			// show a message showing valid options
+			fmt.Printf("-> please enter y or n\n")
+			
+			// stop the event loop to give them time to read
+			time.Sleep(1500 * time.Millisecond)
+			
+		}
+		
+	}
+
+	// clear for a sec
+	clear()
+
+	// check if the config even exists
+	if !doesFileExist(config) {
+
+		// if it doesn't exist
+		// send a message
+		fmt.Printf("[err]: there is no config at %s...\n", config)
+		fmt.Printf("       please generate one by passing the setup flag\n")
+		fmt.Printf("       when running maryo. or, maryo may detect that one has\n")
+		fmt.Printf("       has not been created. or, you can just pass the path\n")
+		fmt.Printf("       to one...\n")
+
+		// exit
+		os.Exit(1)
+
+	}
+
+	// if it does, check if it is valid
+	if !checkJSONValidity(config) {
+
+		// send a message
+		fmt.Printf("[err]: your config at %s is invalid...\n", config)
+		fmt.Printf("       please regenerate it and fix it, which the former\n")
+		fmt.Printf("       can be done by setting up maryo again...\n")
+
+		// exit
+		os.Exit(1)
+
+	}
+
+	// load it if it is
+	configData := readJSONFile(config)
+
+	// do as requested
+	if enableHTTPS == "y" {
+
+		// enable https in the config
+		configData["https"] = true
+
+	} else if enableHTTPS == "n" {
+
+		// keep https disabled
+		configData["https"] = false
+
+	}
+
+	// write the log back
+	writeJSONFile(config, configData)
+
+	// let the user know it's done, and exit on enter
+	fmt.Printf("finished modifying the config...\n")
+	fmt.Printf("press enter to continue...\n")
 	_ = input("")
 
 }
@@ -225,8 +321,24 @@ func generateRomFSPatch(encryptionKeyPath string) {
 
 	// and then proceed to make the
 	// require subdirectories
-	
-	// ~~to be continued~~
+
+	// title id folder
+	makeDirectory("patch-out/0004001b00010002")
+
+	// romfs folder
+	makeDirectory("patch-out/0004001b00010002/romfs")
+
+	// and now all we have to do
+	// is encrypt the cert and key with
+	// the 0x0D aes key
+
+	/*
+
+	aaannnd... since i can't figure out how to get past this point...
+
+	there won't be any  dev here for a bit...
+
+	*/
 
 }
 
@@ -260,7 +372,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" welcome to the maryo setup wizard.     > intro              \n")
 	fmt.Printf(" this program will walk you through       config creation    \n")
 	fmt.Printf(" setting up your very own Pretendo        confirm prefs      \n")
-	fmt.Printf(" proxy server for accessing the server.   generate cert      \n")
+	fmt.Printf(" proxy server for accessing the server.   make https work    \n")
 	fmt.Printf(" -> press enter                           profit???          \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
@@ -277,7 +389,7 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" how would you like to configure the      intro              \n")
 		fmt.Printf(" proxy?                                 > config creation    \n")
 		fmt.Printf(" 1. automatic                             confirm prefs      \n")
-		fmt.Printf(" 2. custom                                generate cart      \n")
+		fmt.Printf(" 2. custom                                make https work    \n")
 		fmt.Printf(" 3. template                              profit???          \n")
 		fmt.Printf(" 4. skip this                                                \n")
 		fmt.Printf("                                                             \n")
@@ -726,7 +838,7 @@ func setup(fileMap map[string]string) {
 			fmt.Printf(" are you okay with the settings below?    intro              \n")
 			fmt.Printf("                                          config creation    \n")
 			fmt.Printf("                                        > confirm prefs      \n")
-			fmt.Printf("                                          generate cert      \n")
+			fmt.Printf("                                          make https work    \n")
 			fmt.Printf("                                          profit???          \n")
 			fmt.Printf("                                                             \n")
 			fmt.Printf(prettifiedJSON)
@@ -843,7 +955,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" now, it is time to generate a https      intro              \n")
 	fmt.Printf(" cert to encrypt your data                config creation    \n")
 	fmt.Printf(" -> press enter                           confirm prefs      \n")
-	fmt.Printf("                                        > generate cert      \n")
+	fmt.Printf("                                        > make https work    \n")
 	fmt.Printf("                                          profit???          \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
@@ -852,7 +964,7 @@ func setup(fileMap map[string]string) {
 	_ = input("")
 
 	// generate the certificates
-	doCertGen()
+	doCertGen("maryo-data/config.json")
 
 	// show them the finished screen
 	clear()
@@ -863,7 +975,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" congratulations, you are finished        intro              \n")
 	fmt.Printf(" setting up maryo!                        config creation    \n")
 	fmt.Printf(" -> press enter                           confirm prefs      \n")
-	fmt.Printf("                                          generate cert      \n")
+	fmt.Printf("                                          make https work    \n")
 	fmt.Printf("                                        > profit???          \n")
 	fmt.Printf("                                                             \n")
 	fmt.Printf("                                                             \n")
