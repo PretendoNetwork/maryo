@@ -266,7 +266,7 @@ func readJSONFile(file string) map[string]interface{} {
 func writeJSONFile(file string, data map[string]interface{}) {
 
 	// turn go map into valid JSON
-	fileData, err := json.Marshal(data)
+	fileData, err := json.MarshalIndent(data, "", "    ")
 
 	// handle errors
 	if err != nil {

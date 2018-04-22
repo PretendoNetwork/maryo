@@ -217,12 +217,12 @@ func doCertGen(config string) {
 	if enableHTTPS == "y" {
 
 		// enable https in the config
-		configData["https"] = true
+		configData["config"].(map[string]interface{})["https"] = true
 
 	} else if enableHTTPS == "n" {
 
 		// keep https disabled
-		configData["https"] = false
+		configData["config"].(map[string]interface{})["https"] = false
 
 	}
 
@@ -808,7 +808,7 @@ func setup(fileMap map[string]string) {
 	if method != "4" {
 
 		// prettify the JSON
-		pretty, err := json.MarshalIndent(config, "", "  ")
+		stringifiedConfig, err := json.MarshalIndent(config, "", "    ")
 		
 		// error handling
 		if err != nil {
@@ -822,7 +822,7 @@ func setup(fileMap map[string]string) {
 		}
 		
 		// turn it into a string
-		prettifiedJSON := string(pretty[:])
+		stringifiedJSON := string(stringifiedConfig[:])
 
 		// confirm the preferences
 		var areSettingsOkay string
@@ -842,7 +842,7 @@ func setup(fileMap map[string]string) {
 			fmt.Printf("                                          make https work    \n")
 			fmt.Printf("                                          profit???          \n")
 			fmt.Printf("                                                             \n")
-			fmt.Printf(prettifiedJSON)
+			fmt.Printf(stringifiedJSON)
 			fmt.Printf("\n                                                             \n")
 			fmt.Printf("-> (y|n)                                                     \n")
 			fmt.Printf("=============================================================\n")
@@ -876,9 +876,6 @@ func setup(fileMap map[string]string) {
 			os.Exit(0)
 			
 		}
-
-		// convert golang map to json
-		stringifiedConfig, err := json.Marshal(config)
 		
 		// error handling
 		if err != nil {
