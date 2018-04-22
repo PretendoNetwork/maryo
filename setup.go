@@ -83,10 +83,11 @@ func doCertGen(config string) {
 		SubjectKeyId: []byte{ 1, 2, 3 },
 		SerialNumber: big.NewInt(1234),
 		Subject: pkix.Name{
-			
-			Country: []string{ "somewhere" },
-			Organization: []string{ "private use only" },
-		
+
+			CommonName:   "maryo-cert",
+			Organization: []string{"pretendo"},
+			Country:      []string{"US"},
+
 		},
 		NotBefore: time.Now(),
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
