@@ -25,8 +25,6 @@ import (
     "io/ioutil"
 	"crypto/rsa"
 	"crypto/rand"
-	//"crypto/aes"                                                                                                                                                                                          
-    //"crypto/cipher"
 )
 
 // cert generation function here so i don't need to rewrite it in maryo.go

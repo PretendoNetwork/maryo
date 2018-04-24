@@ -18,6 +18,7 @@ go to the releases, and download the correct binary for your system. just double
 - [golang](https://golang.org/)
 - [goproxy](https://github.com/elazarl/goproxy)
 - [ansicolor](https://github.com/shiena/ansicolor)
+- [go-asyncserver](https://github.com/hectane/go-asyncserver)
 
 #### building
 
