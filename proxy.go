@@ -88,32 +88,32 @@ func startProxy(configName string, logging bool) {
 			writeFile("maryo-data/proxy.log", fmt.Sprintf("-> got request to %s\n", r.URL.Host))
 
 			// get prettified request
-			
+
 			// define these variables so no errors
 			var reqData []byte
 			var err error
-			
+
 			// no errors for post requests
 			if r.Method == "POST" {
-				
+
 				// if it is, then tell the dumper it is
 				reqData, err = httputil.DumpRequest(r, true)
-				
+
 			} else {
-				
+
 				// otherwise, don't
 				reqData, err = httputil.DumpRequest(r, false)
-				
+
 			}
-			
+
 			if err != nil {
-				
+
 				// output error
 				fmt.Printf("[err]: error occurred while dumping http request\n")
 				fmt.Printf("%s\n", err.Error())
-	
+
 			}
-			
+
 			// if it is said to be verbose with logging, print request data
 			if logging == true {
 
@@ -174,49 +174,49 @@ func startProxy(configName string, logging bool) {
 
 				// error handling
 				if err != nil {
-					
+
 					// return a response
 					return r, goproxy.NewResponse(newReq, goproxy.ContentTypeText, http.StatusBadGateway, strings.Join([]string{"no worries, this is an error in maryo\n", err.Error()}, ""))
 
 				}
-				
+
 				// dump response
-				
+
 				// make these variables earlier on so no errors
 				var fmtResp []byte
-				
+
 				// check if the request is a post request
 				if r.Method == "POST" {
-					
+
 					// if so, tell the dumper that it is one
 					fmtResp, err = httputil.DumpResponse(resp, true)
-					
+
 				} else {
-					
+
 					// otherwise, don't
 					fmtResp, err = httputil.DumpResponse(resp, false)
-					
-				}	
-				
+
+				}
+
 				// error handling
 				if err != nil {
-					
+
 					// log the error
 					fmt.Printf("[err]: error while dumping response")
 					fmt.Printf("%s\n", err.Error())
-					
+
 				}
-				
+
 				// make sure the user wants to log response data
 				if logging == true {
-					
+
 					// log it if they do
 					fmt.Printf("\n-- response data\n")
 					fmt.Printf("%s\n", string(fmtResp[:]))
 					fmt.Printf("\n\n")
-					
+
 				}
-				
+
 				// return the processed response
 				return r, resp
 
@@ -229,5 +229,5 @@ func startProxy(configName string, logging bool) {
 
 	// start the proxy
 	log.Fatal(http.ListenAndServe(":9437", proxy))
-	
+
 }
