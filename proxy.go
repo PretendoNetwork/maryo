@@ -16,6 +16,7 @@ import (
 	// internals
 	"fmt"
 	"log"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -68,8 +69,18 @@ func startProxy(configName string, logging bool) {
 	// http client for use when performing POST requests
 	httpClient := &http.Client{}
 
+	cert, err := ioutil.ReadFile("maryo-data/cert.pem")
+	if err != nil {
+		panic(err)
+	}
+
+	key, err := ioutil.ReadFile("maryo-data/cert.key")
+	if err != nil {
+		panic(err)
+	}
+
 	// add the ninty cert and key to the proxy for decrypting
-	setCA(nintyCert, nintyKey)
+	setCA(cert, key)
 
 	// verbose mode can be a little... too verbose
 	proxy.Verbose = logging
