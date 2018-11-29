@@ -83,22 +83,17 @@ func main() {
 
 		}
 
-		// cert.pem and key.pem -- if nonexistent, just do setup
+		// cert.pem and cert.key -- if nonexistent, just do setup
 		fileMap["cert"] = "ne"
 
 		// check the cert
 		if doesFileExist("maryo-data/cert.pem") != false {
 
-			// check the pubkey
-			if doesFileExist("maryo-data/public-key.pem") != false {
-				
-				// check the privatekey
-				if doesFileExist("maryo-data/private-key.pem") != false {
+			// check the privatekey
+			if doesFileExist("maryo-data/cert.key") != false {
 
-					// say it is valid if it is there
-					fileMap["cert"] = "va"
-
-				}
+				// say it is valid if it is there
+				fileMap["cert"] = "va"
 
 			}
 

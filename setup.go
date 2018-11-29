@@ -13,6 +13,11 @@ package main
 
 import (
 	// internals
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -20,16 +25,13 @@ import (
 	"strings"
 	"time"
 	"math/big"
-	"crypto/x509"
-	"crypto/x509/pkix"
-    "io/ioutil"
-	"crypto/rsa"
-	"crypto/rand"
 )
 
 // cert generation function here so i don't need to rewrite it in maryo.go
 // (adapted from https://www.socketloop.com/tutorials/golang-create-x509-certificate-private-and-public-keys)
 func doCertGen(config string) {
+	// variable stuff
+	var notBefore time.Time
 
 	// clear the screen because why not?
 	clear()
@@ -44,7 +46,7 @@ func doCertGen(config string) {
 
 		// make it
 		makeDirectory("maryo-data")
-	
+
 	}
 
 	// clean the cert and key pair if they exist
@@ -57,29 +59,38 @@ func doCertGen(config string) {
 
 	}
 
-	// private-key.pem
-	if doesFileExist("maryo-data/private-key.pem") {
-
-		// delete the private key
-		deleteFile("maryo-data/private-key.pem")
-
-	}
-
-	// public-key.pem
-	if doesFileExist("maryo-data/public-key.pem") {
+	// cert.key
+	if doesFileExist("maryo-data/cert.key") {
 
 		// delete the pubkey
-		deleteFile("maryo-data/public-key.pem")
+		deleteFile("maryo-data/cert.key")
 
 	}
+
+	// serial number limit stuff
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		fmt.Printf("failed to generate serial number...\n")
+
+		// panic
+		panic(err)
+
+	}
+
+
+	// cert valid before date
+	notBefore = time.Now()
+
+	// cert valid after date
+	notAfter := notBefore.Add(365*24*time.Hour)
 
 	// populate certificate with data
     template := &x509.Certificate {
-		
+
 		IsCA: true,
 		BasicConstraintsValid: true,
-		SubjectKeyId: []byte{ 1, 2, 3 },
-		SerialNumber: big.NewInt(1234),
+		SerialNumber: serialNumber,
 		Subject: pkix.Name{
 
 			CommonName:   "maryo-cert",
@@ -87,10 +98,11 @@ func doCertGen(config string) {
 			Country:      []string{"US"},
 
 		},
-		NotBefore: time.Now(),
+		NotBefore: notBefore,
+		NotAfter:  notAfter,
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-		KeyUsage: x509.KeyUsageDigitalSignature|x509.KeyUsageCertSign,
-	
+		KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+
 	}
 
 	// generate private key
@@ -101,7 +113,7 @@ func doCertGen(config string) {
 
 		// display error
 		fmt.Printf("[err]: error while generating key pair...\n")
-		
+
 		// panic
 		panic(err)
 
@@ -116,28 +128,71 @@ func doCertGen(config string) {
 
 	// check for errors
 	if err != nil {
-		
+
 		// display error
 		fmt.Printf("[err]: error while generating certificate...\n")
-	
+
 		// panic
 		panic(err)
-	
+
 	}
 
-	// save private key
-	pkey := x509.MarshalPKCS1PrivateKey(privatekey)
-	ioutil.WriteFile("maryo-data/private-key.pem", pkey, 0777)
-	fmt.Printf("private key saved...\n")
-
-	// save public key
-	pubkey, _ := x509.MarshalPKIXPublicKey(publickey)
-	ioutil.WriteFile("maryo-data/public-key.pem", pubkey, 0777)
-	fmt.Printf("public key saved...\n")
-
 	// save cert
-	ioutil.WriteFile("maryo-data/cert.pem", cert, 0777)
+	certOut, err := os.Create("maryo-data/cert.pem")
+	if err != nil {
+
+		// display error
+		fmt.Print("failed to open the certificate for writing...\n")
+
+		// panic
+		panic(err)
+
+	}
+
+	if err := pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: cert}); err != nil {
+
+		// display error
+		fmt.Print("failed to write data to the certificate...\n")
+
+		// panic
+		panic(err)
+
+	}
+	if err := certOut.Close(); err != nil {
+
+		// display error
+		fmt.Print("error closing the certificate...\n")
+
+		// panic
+		panic(err)
+
+	}
 	fmt.Printf("certificate saved...\n")
+
+	// save private key
+	keyOut, err := os.OpenFile("maryo-data/cert.key", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		fmt.Print("failed to open the keypair for writing...\n")
+
+		// panic
+		panic(err)
+
+	}
+	if err := pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(privatekey)}); err != nil {
+		fmt.Print("failed to write data to the keypair...\n")
+
+		// panic
+		panic(err)
+
+	}
+	if err := keyOut.Close(); err != nil {
+		fmt.Print("error closing the keypair...\n")
+
+		// panic
+		panic(err)
+
+	}
+	fmt.Printf("keypair saved...\n")
 
 	// then, say they were made
 	fmt.Printf("finished generating the cert and key pair...\n")
@@ -156,24 +211,24 @@ func doCertGen(config string) {
 		fmt.Printf("would you like to enable https on the server?\n")
 		fmt.Printf("-> (y|n)\n")
 		enableHTTPS = input(": ")
-		
+
 		// make sure it is a valid option
 		if (enableHTTPS == "y") || (enableHTTPS == "n") {
-		
+
 			// exit loop if it is
 			break
-			
-		// if it isn't	
+
+		// if it isn't
 		} else {
-			
+
 			// show a message showing valid options
 			fmt.Printf("-> please enter y or n\n")
-			
+
 			// stop the event loop to give them time to read
 			time.Sleep(1500 * time.Millisecond)
-			
+
 		}
-		
+
 	}
 
 	// clear for a sec
@@ -260,10 +315,9 @@ func generateRomFSPatch(encryptionKeyPath string) {
 
 	// check the files exist
 	filesInDataDir := []bool {
-		
-		doesFileExist("maryo-data/private-key.pem"),
-		doesFileExist("maryo-data/public-key.pem"),
+
 		doesFileExist("maryo-data/cert.pem"),
+		doesFileExist("maryo-data/cert.key"),
 
 	}
 
@@ -281,9 +335,9 @@ func generateRomFSPatch(encryptionKeyPath string) {
 
 			// exit
 			os.Exit(1)
-		
+
 		}
-		
+
 	}
 
 	// check for the aes key required for the
@@ -299,14 +353,14 @@ func generateRomFSPatch(encryptionKeyPath string) {
 		os.Exit(1)
 
 	}
-	
+
 	// now, we can begin generating the patch
 
 	// alert
 	fmt.Printf("generating patch...")
 
 	// create directory for the patch
-	
+
 	// but check for it first
 	if doesDirExist("patch-out") {
 
@@ -361,7 +415,7 @@ func setup(fileMap map[string]string) {
 
 	// setup environment
 	clear()
-	
+
 	// set term title
 	ttitle("maryo -> setup")
 
@@ -395,24 +449,24 @@ func setup(fileMap map[string]string) {
 		fmt.Printf(" -> (1|2|3|4)                                                \n")
 		fmt.Printf("=============================================================\n")
 		method = input(": ")
-		
+
 		// make sure it is a valid option
 		if (method == "1") || (method == "2") || (method == "3") || (method == "4") {
-		
+
 			// exit loop if it is
 			break
-			
-		// if it isn't	
+
+		// if it isn't
 		} else {
-			
+
 			// show a message showing valid options
 			fmt.Printf("-> please enter 1, 2, 3, or 4\n")
-			
+
 			// stop the event loop to give them time to read
 			time.Sleep(1500 * time.Millisecond)
-			
+
 		}
-		
+
 	}
 
 	// create config var
@@ -426,7 +480,7 @@ func setup(fileMap map[string]string) {
 	fmt.Printf(" current config status: %s\n", fileStat[fileMap["config"]])
 	// automatic config making
 	if method == "1" {
-		
+
 		// show some messages
 		fmt.Printf(" method: automatic..\n")
 		fmt.Printf("-- beginning tests\n")
@@ -447,26 +501,26 @@ func setup(fileMap map[string]string) {
 
 			// parse it
 			err2 := json.Unmarshal([]byte(res), &parsedRes)
-			
+
 			// make sure it isn't empty
 			if res != "" {
-				
+
 				// if there is an error in JSON parsing
 				if err2 != nil {
-					
+
 					// and not an error with the request
 					if err == nil {
-						
+
 						// show a message
 						fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", test[x])
-						
+
 						// show a traceback
 						panic(err2)
-						
+
 					}
-					
+
 				}
-				
+
 			}
 
 			// handle the results
@@ -503,26 +557,26 @@ func setup(fileMap map[string]string) {
 
 			// parse it
 			err4 := json.Unmarshal([]byte(res2), &parsedRes2)
-			
+
 			// make sure the request isn't empty
 			if res2 != "" {
-				
+
 				// if there is an error in JSON parsing
 				if err4 != nil {
-					
+
 					// and not an error with the request
 					if err3 == nil {
-						
+
 						// show an error message
 						fmt.Printf("\n[err] : error when parsing JSON during validating %s server\n", testOfficial[x])
-						
+
 						// and show a traceback
 						panic(err4)
-						
+
 					}
-					
+
 				}
-				
+
 			}
 
 			// handle the results
@@ -544,7 +598,7 @@ func setup(fileMap map[string]string) {
 
 		// print out the results
 		fmt.Printf("-- printing results of tests\n")
-		
+
 		// for local servers
 		for x := 0; x < len(result); x++ {
 
@@ -553,19 +607,19 @@ func setup(fileMap map[string]string) {
 
 			// print the results
 			if result[x] == true {
-				
+
 				// show a successful message
 				fmt.Printf(" %s: success\n", test[x])
-				
+
 			} else {
-				
+
 				// or a failiure message
 				fmt.Printf(" %s: failiure\n", test[x])
-				
+
 			}
 
 		}
-		
+
 		// for the official servers
 		for x := 0; x < len(resultOfficial); x++ {
 
@@ -574,15 +628,15 @@ func setup(fileMap map[string]string) {
 
 			// print the results
 			if resultOfficial[x] == true {
-				
+
 				// if successful
 				fmt.Printf(" %s: success\n", testOfficial[x])
-				
+
 			} else {
-				
+
 				// or failed
 				fmt.Printf(" %s: failiure\n", testOfficial[x])
-				
+
 			}
 
 		}
@@ -600,28 +654,28 @@ func setup(fileMap map[string]string) {
 
 		// scan the local server result list to see if any are true, since they have priority
 		useLocal = false
-		
+
 		// scan it
 		for x := 0; x < len(result); x++ {
-			
+
 			// if it works, use local servers
 			if result[x] == true {
-				
+
 				// set the variable
 				useLocal = true
-				
+
 			}
-			
+
 		}
 
 		// local servers have priority
 		if useLocal == true {
-			
+
 			// set the needed variables
 			using = "local"
 			cfgTest = test
 			cfgResult = result
-			
+
 		} else {
 
 			// check this first to see if official even works
@@ -631,7 +685,7 @@ func setup(fileMap map[string]string) {
 					doesOfficialHaveAnyWorkingEndpoints = true
 				}
 			}
-			
+
 			// if the official servers work
 			if doesOfficialHaveAnyWorkingEndpoints == true {
 
@@ -648,7 +702,7 @@ func setup(fileMap map[string]string) {
 				os.Exit(0)
 
 			}
-			
+
 		}
 
 		// make a map for the config
@@ -660,15 +714,15 @@ func setup(fileMap map[string]string) {
 
 		// apply a nice helping of all of the working endpoints to the config
 		for x := 0; x < len(cfgTest); x++ {
-			
+
 			// if this endpoint works
 			if cfgResult[x] == true {
-				
+
 				// set it in the config
 				config["endpoints"][testEndpoints["ninty"][cfgTest[x]]] = testEndpoints[using][cfgTest[x]]
-				
+
 			}
-			
+
 		}
 
 		// set some config vars
@@ -680,7 +734,7 @@ func setup(fileMap map[string]string) {
 
 		// creating a custom config
 	} else if method == "2" {
-		
+
 		// show a little message
 		fmt.Printf(" method: custom..\n")
 
@@ -697,7 +751,7 @@ func setup(fileMap map[string]string) {
 		// temp vars
 		var inputtedFrom string
 		var inputtedTo string
-	
+
 		// a infinite loop for custom configs
 		for true {
 			clear()
@@ -712,24 +766,24 @@ func setup(fileMap map[string]string) {
 
 			// ask for conf vals
 			inputtedFrom = input("from: ")
-			
+
 			// if the from field is empty
 			if inputtedFrom == "" {
-				
+
 				// exit the loop
 				break
-				
+
 			}
-			
+
 			// ask for the to value
 			inputtedTo = input("to: ")
-			
+
 			// if the field is empty
 			if inputtedTo == "" {
-				
+
 				// exit the loop
 				break
-				
+
 			}
 
 			// place them in the config var
@@ -752,7 +806,7 @@ func setup(fileMap map[string]string) {
 		// ask for choice
 		fmt.Printf(" method: template..\n")
 		for true {
-			
+
 			// clear screen
 			clear()
 
@@ -770,34 +824,34 @@ func setup(fileMap map[string]string) {
 
 			// break if it's a valid option
 			if (tmpl == "1") || (tmpl == "2") {
-				
+
 				// break
 				break
-				
+
 			} else {
-				
+
 				// otherwise show a help message
 				fmt.Printf("-> please enter 1 or 2\n")
-				
+
 				// sleep to let them read it
 				time.Sleep(1500 * time.Millisecond)
-				
+
 			}
-			
+
 		}
 
 		// load the selected template into the config var
 		// TODO: add variable templates
 		if tmpl == "1" {
-			
+
 			// load the template
 			config = localConf
-			
+
 		} else if tmpl == "2" {
-			
+
 			// load this other template
 			config = pretendoConf
-			
+
 		}
 
 	}
@@ -807,27 +861,27 @@ func setup(fileMap map[string]string) {
 
 		// prettify the JSON
 		stringifiedConfig, err := json.MarshalIndent(config, "", "    ")
-		
+
 		// error handling
 		if err != nil {
-			
+
 			// show an error message
 			fmt.Printf("[err] : error while prettifying JSON\n")
-			
+
 			// show traceback
 			panic(err)
-			
+
 		}
-		
+
 		// turn it into a string
 		stringifiedJSON := string(stringifiedConfig[:])
 
 		// confirm the preferences
 		var areSettingsOkay string
-		
+
 		// for loop for confirming
 		for true {
-			
+
 			// clear screen for cleanliness
 			clear()
 
@@ -845,102 +899,102 @@ func setup(fileMap map[string]string) {
 			fmt.Printf("-> (y|n)                                                     \n")
 			fmt.Printf("=============================================================\n")
 			areSettingsOkay = input(": ")
-		
+
 			// check if response is okay
 			if (areSettingsOkay == "y") || (areSettingsOkay == "n") {
-				
+
 				// exit loop if valid
 				break
-				
+
 			} else {
-				
+
 				// show a help message
 				fmt.Printf("-> please enter y or n")
-				
+
 				// let them read it
 				time.Sleep(1500 * time.Millisecond)
-				
+
 			}
-			
+
 		}
 
 		// check if they answered no
 		if areSettingsOkay == "n" {
-			
+
 			// if so, clear
 			clear()
-			
+
 			// and quit program
 			os.Exit(0)
-			
+
 		}
-		
+
 		// error handling
 		if err != nil {
-			
+
 			// show error message
 			fmt.Printf("[err] : error when stringifying json")
-			
+
 			// show traceback
 			panic(err)
-			
+
 		}
-		
+
 		// make sure the maryo folder exists
 		if doesDirExist("maryo-data") == false {
 
 			// make it if it doesn't
 			makeDirectory("maryo-data")
-		
+
 		}
-		
+
 		// place it into the file
 		if fileMap["config"] == "iv" {
-			
+
 			// delete the existing config
 			deleteFile("maryo-data/config.json")
-			
+
 			// create a new one
 			createFile("maryo-data/config.json")
-			
+
 			// write the data to the file
 			writeByteToFile("maryo-data/config.json", stringifiedConfig)
-			
+
 		} else if fileMap["config"] == "ne" {
-			
+
 			// create the config
 			createFile("maryo-data/config.json")
-			
+
 			// write the config to the file
 			writeByteToFile("maryo-data/config.json", stringifiedConfig)
-			
+
 		} else if fileMap["config"] == "uk" {
-			
+
 			// detect status of config and do the
 			// things to write to it.
 			if doesFileExist("maryo-data/config.json") == true {
-				
+
 				// delete existing config
 				deleteFile("maryo-data/config.json")
-				
+
 				// create a new one
 				createFile("maryo-data/config.json")
-				
+
 				// write the config to it
 				writeByteToFile("maryo-data/config.json", stringifiedConfig)
-				
+
 			} else {
-				
+
 				// create the config
 				createFile("maryo-data/config.json")
-				
+
 				// write the config to the file
 				writeByteToFile("maryo-data/config.json", stringifiedConfig)
-				
+
 			}
-			
+
 		}
-		
+
 	}
 
 	// generate a https cert
